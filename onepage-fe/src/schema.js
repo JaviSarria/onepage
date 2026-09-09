@@ -26,6 +26,15 @@ export const TIPOS_RECURSO = ['base_datos', 'servicio']
 
 const texto = (id, titulo, campo, ayuda = '') => ({ tipo: 'texto', id, titulo, campo, ayuda })
 
+export function tituloTareaDesarrollo(item, tareas = []) {
+  const tarea = tareas.find((candidate) => candidate.id === item.tarea_id)
+  return tarea
+    ? [tarea.codigo, tarea.nombre].filter(Boolean).join(' — ')
+    : item.tarea_id
+      ? `Tarea ${item.tarea_id}`
+      : 'Tarea desarrollada'
+}
+
 const ejecuciones = {
   tipo: 'tabla',
   id: 'ejecuciones',
@@ -63,20 +72,11 @@ const tareasSeguimiento = {
   recurso: 'tareas-seguimiento',
   rutaPadre: 'seguimientos',
   etiqueta: 'tarea',
-  clave: (t) => t.tarea_codigo || 'Tarea',
-  campos: [{ campo: 'tarea_codigo', etiqueta: 'Tarea' }],
-  textos: [],
-  hijos: [
-    {
-      tipo: 'checklist',
-      id: 'actividades-seguimiento',
-      titulo: 'Actividades',
-      recurso: 'actividades-seguimiento',
-      rutaPadre: 'tareas-seguimiento',
-      campo: 'descripcion',
-      check: 'completada'
-    }
-  ]
+  clave: (t) => t.nombre || t.tarea_codigo || 'Tarea',
+  campos: [{ campo: 'nombre', etiqueta: 'Nombre' }],
+  textos: [{ campo: 'descripcion', titulo: 'Descripción' }],
+  camposFinales: [{ campo: 'completada', etiqueta: 'Terminado', control: 'check' }],
+  hijos: []
 }
 
 const seguimientos = {
@@ -90,8 +90,8 @@ const seguimientos = {
     { campo: 'fecha', etiqueta: 'Fecha' },
     { campo: 'tiempo', etiqueta: 'Tiempo (h)', control: 'numero' }
   ],
-  textos: [{ campo: 'notas', titulo: 'Notas' }],
-  hijos: [tareasSeguimiento]
+  textos: [],
+  hijos: [tareasSeguimiento, { tipo: 'texto', id: 'notas', titulo: 'Notas', campo: 'notas' }]
 }
 
 const reuniones = {
@@ -113,19 +113,54 @@ const reuniones = {
   hijos: [accionesReunion]
 }
 
-const cambios = {
-  tipo: 'tabla',
-  id: 'cambios',
+const cambiosDesarrollo = {
+  tipo: 'entidades',
+  id: 'cambios-desarrollo',
   titulo: 'Cambios',
-  recurso: 'cambios',
-  rutaPadre: 'tareas',
-  columnas: [
+  recurso: 'cambios-desarrollo',
+  rutaPadre: 'tareas-desarrollo',
+  etiqueta: 'cambio',
+  clave: (c) => c.nombre || 'Cambio',
+  campos: [
     { campo: 'nombre', etiqueta: 'Objeto' },
     { campo: 'ubicacion', etiqueta: 'Ubicación' },
-    { campo: 'descripcion', etiqueta: 'Descripción' },
     { campo: 'repositorio', etiqueta: 'Repositorio' },
     { campo: 'rama', etiqueta: 'Rama' },
     { campo: 'commit', etiqueta: 'Commit' }
+  ],
+  textos: [{ campo: 'descripcion', titulo: 'Descripción' }],
+  hijos: []
+}
+
+const desarrollo = {
+  id: 'desarrollo',
+  titulo: 'Desarrollo',
+  hijos: [
+    {
+      tipo: 'entidades',
+      id: 'tareas-desarrollo',
+      titulo: 'Tareas desarrolladas',
+      recurso: 'tareas-desarrollo',
+      etiqueta: 'tarea desarrollada',
+      clave: (t) => tituloTareaDesarrollo(t),
+      campos: [
+        { campo: 'tarea_id', etiqueta: 'Id tarea de Análisis', control: 'select-dinamico-tarea' },
+        { campo: 'estado', etiqueta: 'Estado', control: 'select', opciones: ESTADOS_TAREA }
+      ],
+      textos: [],
+      hijos: [
+        {
+          tipo: 'checklist',
+          id: 'actividades-desarrollo',
+          titulo: 'Actividades',
+          recurso: 'actividades-desarrollo',
+          rutaPadre: 'tareas-desarrollo',
+          campo: 'descripcion',
+          check: 'completada'
+        },
+        cambiosDesarrollo
+      ]
+    }
   ]
 }
 
@@ -265,7 +300,8 @@ export const ESQUEMA_EVOLUTIVO = {
           titulo: 'Requisitos',
           recurso: 'requisitos',
           columnas: [
-            { campo: 'codigo', etiqueta: 'Id' },
+            { campo: 'grupo_id', etiqueta: 'Grupo', control: 'select-dinamico' },
+            { campo: 'codigo', etiqueta: 'Id', ancho: 'codigo' },
             { campo: 'detalle', etiqueta: 'Requisito' }
           ]
         },
@@ -275,8 +311,8 @@ export const ESQUEMA_EVOLUTIVO = {
           titulo: 'Criterios de aceptación',
           recurso: 'criterios',
           columnas: [
-            { campo: 'codigo', etiqueta: 'Id' },
-            { campo: 'requisito_codigo', etiqueta: 'Requisito' },
+            { campo: 'codigo', etiqueta: 'Id', ancho: 'codigo' },
+            { campo: 'requisito_codigo', etiqueta: 'Requisito', ancho: 'codigo' },
             { campo: 'criterio', etiqueta: 'Criterio' }
           ]
         },
@@ -287,6 +323,7 @@ export const ESQUEMA_EVOLUTIVO = {
       id: 'analisis',
       titulo: 'Análisis',
       hijos: [
+        texto('investigacion_previa', 'Investigación previa', 'investigacion_previa'),
         texto('descripcion_solucion', 'Descripción de la solución', 'descripcion_solucion'),
         repositorios,
         {
@@ -308,10 +345,11 @@ export const ESQUEMA_EVOLUTIVO = {
             { campo: 'diseno', titulo: 'Diseño' },
             { campo: 'problemas', titulo: 'Problemas' }
           ],
-          hijos: [recursosTarea, actividadesTarea, cambios]
+          hijos: [recursosTarea, actividadesTarea]
         }
       ]
     },
+    desarrollo,
     {
       id: 'pruebas',
       titulo: 'Pruebas',
@@ -325,9 +363,9 @@ export const ESQUEMA_EVOLUTIVO = {
           etiqueta: 'caso',
           clave: (c) => [c.codigo, c.nombre].filter(Boolean).join(' — ') || 'Caso',
           campos: [
-            { campo: 'codigo', etiqueta: 'Id' },
+            { campo: 'codigo', etiqueta: 'Id', ancho: 'codigo' },
             { campo: 'nombre', etiqueta: 'Nombre' },
-            { campo: 'requisito_codigo', etiqueta: 'Requisito' },
+            { campo: 'requisito_codigo', etiqueta: 'Requisito', ancho: 'codigo' },
             { campo: 'criterio_codigo', etiqueta: 'Criterio' },
             {
               campo: 'estado',
@@ -455,6 +493,7 @@ export const ESQUEMA_INCIDENCIA = {
       id: 'analisis',
       titulo: 'Análisis',
       hijos: [
+        texto('investigacion_previa', 'Investigación previa', 'investigacion_previa'),
         texto('causa_raiz', 'Causa raíz', 'causa_raiz'),
         texto('descripcion_solucion', 'Descripción de la solución', 'descripcion_solucion'),
         repositorios,
@@ -477,10 +516,11 @@ export const ESQUEMA_INCIDENCIA = {
             { campo: 'diseno', titulo: 'Diseño de la corrección' },
             { campo: 'problemas', titulo: 'Problemas' }
           ],
-          hijos: [recursosTarea, actividadesTarea, cambios]
+          hijos: [recursosTarea, actividadesTarea]
         }
       ]
     },
+    desarrollo,
     {
       id: 'pruebas',
       titulo: 'Pruebas',

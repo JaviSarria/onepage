@@ -34,8 +34,9 @@ incidencia) por una aplicación que:
 | Ámbito | Cubierto |
 | --- | --- |
 | Proyectos | Alta, edición, borrado y agrupación de documentos |
-| Evolutivos | Ciclo completo: requerimiento, análisis, desarrollo, pruebas, DoD, despliegue, reuniones y seguimiento |
-| Incidencias | Ciclo completo: problema, causa raíz, análisis, pruebas (incluida no regresión), DoD, despliegue, reuniones y seguimiento |
+| Evolutivos | Ciclo completo: requerimiento, análisis (incluida investigación previa), desarrollo, pruebas, DoD, despliegue, reuniones y seguimiento |
+| Incidencias | Ciclo completo: problema, análisis (incluida investigación previa), desarrollo, pruebas (incluida no regresión), DoD, despliegue, reuniones y seguimiento |
+| Markdown | Edición de los textos con previsualización Markdown mediante el botón del campo |
 | Trazabilidad | Matriz requisito / criterio / tarea / prueba / cambios |
 | Planificación | Estimado, real, fechas, bloqueos y estados |
 
@@ -122,6 +123,8 @@ Extraído de [docs/evolutivo-01.md](docs/evolutivo-01.md) y [docs/incidencia-01.
 | `criterios_aceptacion` | Criterios `CA-XX` |
 | `repositorios` | Nombre, subaccount y space |
 | `tareas` | `TAR-XX`, descripción, diseño, dependencias, problemas y estado |
+| `tareas_desarrolladas` | Tareas implementadas, actividades, causa raíz (si aplica) y estado |
+| `cambios_desarrollo` | Objetos modificados durante el desarrollo |
 | `recursos_tarea` | Recursos dependientes (base de datos o servicio) |
 | `actividades_tarea` | Checklist de actividades de la tarea |
 | `cambios` | Objetos modificados: nombre, ubicación, repositorio, rama y commit |
@@ -247,6 +250,8 @@ Documentación interactiva de la API: <http://127.0.0.1:8000/docs>.
   - `tabla`: colección editable en línea, con columnas configurables.
   - `checklist`: lista de comprobación con casilla y descripción.
   - `entidades`: colección donde cada elemento es un acordeón con ficha, textos y subcolecciones.
+- Los bloques de texto se editan con `MarkdownField.vue`; el botón situado en su esquina alterna
+  entre edición y previsualización Markdown.
 - Controles disponibles en `EntradaCampo.vue`: `texto`, `area`, `select`, `numero` y `check`.
 - El estado de apertura vive en `src/store/acordeon.js` y se comparte entre el documento y el
   índice derecho; las claves tienen forma de ruta (`doc/analisis/tareas/3/cambios`).

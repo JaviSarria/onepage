@@ -3,7 +3,9 @@ import { computed, inject } from 'vue'
 import Acordeon from './Acordeon.vue'
 import EntradaCampo from './EntradaCampo.vue'
 import ListaChecklist from './ListaChecklist.vue'
+import MarkdownField from './MarkdownField.vue'
 import TablaEditable from './TablaEditable.vue'
+import { tituloTareaDesarrollo } from '../schema.js'
 
 const props = defineProps({
   nodo: { type: Object, required: true },
@@ -16,9 +18,51 @@ const ctx = inject('ctx')
 const clave = computed(() => `${props.claveBase}/${props.nodo.id}`)
 const items = computed(() => props.datos?.[props.nodo.recurso] || [])
 const padreId = computed(() => props.datos?.id)
+const grupos = computed(() => props.datos?.['grupos-requisito'] || [])
+const tareas = computed(() => props.datos?.tareas || [])
+const columnas = computed(() => {
+  if (!props.nodo.columnas) return []
+  return props.nodo.columnas.map((columna) =>
+    columna.campo === 'grupo_id' || columna.control === 'select-dinamico-tarea'
+      ? {
+          ...columna,
+          opciones:
+            columna.campo === 'grupo_id'
+              ? grupos.value.map((grupo) => ({ valor: grupo.id, etiqueta: grupo.nombre }))
+              : tareas.value.map((tarea) => ({
+                  valor: tarea.id,
+                  etiqueta: [tarea.codigo, tarea.nombre].filter(Boolean).join(' — ')
+                }))
+        }
+      : columna
+  )
+})
+
+function opcionesCampo(campo) {
+  if (campo.control === 'select-dinamico-tarea') {
+    return tareas.value.map((tarea) => ({
+      valor: tarea.id,
+      etiqueta: [tarea.codigo, tarea.nombre].filter(Boolean).join(' — ')
+    }))
+  }
+  return campo.opciones || []
+}
+const puedeCrear = computed(() => {
+  if (props.nodo.id === 'requisitos') return grupos.value.length > 0
+  if (props.nodo.id === 'tareas-desarrollo') return tareas.value.length > 0
+  return true
+})
 
 function crear() {
-  ctx.crearHijo(props.nodo.recurso, props.nodo.rutaPadre || null, padreId.value, {})
+  if (props.nodo.id === 'requisitos' && !grupos.value.length) return
+  if (props.nodo.id === 'tareas-desarrollo' && !tareas.value.length) return
+  const datos =
+    props.nodo.id === 'requisitos'
+      ? { grupo_id: grupos.value[0].id }
+      : props.nodo.id === 'tareas-desarrollo'
+        ? { tarea_id: tareas.value[0].id }
+        : {}
+  ctx.crearHijo(props.nodo.recurso, props.nodo.rutaPadre || null, padreId.value, datos)
 }
 
 function actualizar(id, cambios) {
@@ -32,14 +76,21 @@ function borrar(id) {
 function actualizarEntidad(item, campo, valor) {
   ctx.actualizarHijo(props.nodo.recurso, item.id, { [campo]: valor })
 }
+
+function tituloEntidad(item) {
+  return props.nodo.id === 'tareas-desarrollo'
+    ? tituloTareaDesarrollo(item, tareas.value)
+    : props.nodo.clave
+      ? props.nodo.clave(item)
+      : '#' + item.id
+}
 </script>
 
 <template>
   <!-- Bloque de texto libre del documento -->
   <Acordeon v-if="nodo.tipo === 'texto'" :clave="clave" :titulo="nodo.titulo" :nivel="nivel">
     <blockquote v-if="nodo.ayuda" class="md">{{ nodo.ayuda }}</blockquote>
-    <EntradaCampo
-      control="area"
+    <MarkdownField
       :valor="datos[nodo.campo] || ''"
       @cambiar="ctx.guardarCampo(nodo.campo, $event)"
     />
@@ -54,8 +105,16 @@ function actualizarEntidad(item, campo, valor) {
     :insignia="String(items.length)"
   >
     <TablaEditable
-      :columnas="nodo.columnas"
+      :columnas="columnas"
       :items="items"
+      :crear-habilitado="puedeCrear"
+      :mensaje-crear="
+        nodo.id === 'requisitos' && !puedeCrear
+          ? 'Da de alta al menos un grupo de requisitos antes de crear requisitos'
+          : nodo.id === 'tareas-desarrollo' && !puedeCrear
+            ? 'Da de alta una tarea en Análisis antes de completar su Desarrollo'
+            : ''
+      "
       @crear="crear"
       @actualizar="actualizar"
       @borrar="borrar"
@@ -96,7 +155,7 @@ function actualizarEntidad(item, campo, valor) {
       v-for="item in items"
       :key="item.id"
       :clave="`${clave}/${item.id}`"
-      :titulo="nodo.clave ? nodo.clave(item) : '#' + item.id"
+      :titulo="tituloEntidad(item)"
       :nivel="Math.min(nivel + 1, 4)"
     >
       <template #acciones>
@@ -109,8 +168,8 @@ function actualizarEntidad(item, campo, valor) {
           <dd>
             <EntradaCampo
               :valor="item[c.campo]"
-              :control="c.control"
-              :opciones="c.opciones || []"
+              :control="c.control === 'select-dinamico-tarea' ? 'select' : c.control"
+              :opciones="opcionesCampo(c)"
               @cambiar="actualizarEntidad(item, c.campo, $event)"
             />
           </dd>
@@ -119,12 +178,25 @@ function actualizarEntidad(item, campo, valor) {
 
       <div v-for="t in nodo.textos" :key="t.campo" class="bloque-texto">
         <h5>{{ t.titulo }}</h5>
-        <EntradaCampo
-          control="area"
+        <MarkdownField
           :valor="item[t.campo] || ''"
           @cambiar="actualizarEntidad(item, t.campo, $event)"
         />
       </div>
+
+      <dl v-if="nodo.camposFinales?.length" class="ficha">
+        <template v-for="c in nodo.camposFinales" :key="c.campo">
+          <dt>{{ c.etiqueta }}</dt>
+          <dd>
+            <EntradaCampo
+              :valor="item[c.campo]"
+              :control="c.control"
+              :opciones="c.opciones || []"
+              @cambiar="actualizarEntidad(item, c.campo, $event)"
+            />
+          </dd>
+        </template>
+      </dl>
 
       <NodoSeccion
         v-for="hijo in nodo.hijos || []"

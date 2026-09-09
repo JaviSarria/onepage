@@ -6,6 +6,7 @@ import { construirIndice, todasLasClaves } from '../toc.js'
 import { ESQUEMAS } from '../schema.js'
 import Acordeon from './Acordeon.vue'
 import EntradaCampo from './EntradaCampo.vue'
+import MarkdownField from './MarkdownField.vue'
 import NodoSeccion from './NodoSeccion.vue'
 
 const props = defineProps({

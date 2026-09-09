@@ -26,11 +26,13 @@ function cambiarInmediato(v) {
 
 <template>
   <select
-    v-if="control === 'select'"
+    v-if="control === 'select' || control === 'select-dinamico'"
     :value="local"
     @change="cambiarInmediato($event.target.value)"
   >
-    <option v-for="o in opciones" :key="o" :value="o">{{ o }}</option>
+    <option v-for="o in opciones" :key="typeof o === 'object' ? o.valor : o" :value="typeof o === 'object' ? o.valor : o">
+      {{ typeof o === 'object' ? o.etiqueta : o }}
+    </option>
   </select>
   <input
     v-else-if="control === 'check'"

@@ -3,7 +3,9 @@ import EntradaCampo from './EntradaCampo.vue'
 
 defineProps({
   columnas: { type: Array, required: true },
-  items: { type: Array, default: () => [] }
+  items: { type: Array, default: () => [] },
+  crearHabilitado: { type: Boolean, default: true },
+  mensajeCrear: { type: String, default: '' }
 })
 const emit = defineEmits(['crear', 'actualizar', 'borrar'])
 </script>
@@ -13,13 +15,23 @@ const emit = defineEmits(['crear', 'actualizar', 'borrar'])
     <table>
       <thead>
         <tr>
-          <th v-for="c in columnas" :key="c.campo">{{ c.etiqueta }}</th>
+          <th
+            v-for="c in columnas"
+            :key="c.campo"
+            :class="c.ancho ? `columna-${c.ancho}` : ''"
+          >
+            {{ c.etiqueta }}
+          </th>
           <th class="acciones-col"></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in items" :key="item.id">
-          <td v-for="c in columnas" :key="c.campo">
+          <td
+            v-for="c in columnas"
+            :key="c.campo"
+            :class="c.ancho ? `columna-${c.ancho}` : ''"
+          >
             <EntradaCampo
               :valor="item[c.campo]"
               :control="c.control"
@@ -38,7 +50,15 @@ const emit = defineEmits(['crear', 'actualizar', 'borrar'])
         </tr>
       </tbody>
     </table>
-    <button type="button" class="anadir" @click="emit('crear')">+ Añadir fila</button>
+    <button
+      type="button"
+      class="anadir"
+      :disabled="!crearHabilitado"
+      :title="mensajeCrear"
+      @click="emit('crear')"
+    >
+      + Añadir fila
+    </button>
   </div>
 </template>
 
@@ -66,6 +86,15 @@ td :deep(textarea:focus) {
 .acciones-col {
   width: 34px;
   text-align: center;
+}
+
+.columna-codigo {
+  width: 92px;
+  max-width: 92px;
+}
+
+.columna-codigo :deep(input) {
+  width: 78px;
 }
 
 .vacio {
