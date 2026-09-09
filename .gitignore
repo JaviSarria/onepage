@@ -1,0 +1,8 @@
+.run/
+onepage-be/data/
+onepage-be/.venv/
+onepage-fe/node_modules/
+onepage-fe/dist/
+__pycache__/
+*.pyc
+*.sqlite3
