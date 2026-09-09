@@ -1,0 +1,22 @@
+[project]
+name = "onepage-be"
+version = "0.1.0"
+description = "Backend FastAPI para la gestion de proyectos, evolutivos e incidencias"
+readme = "README.md"
+authors = [
+    { name = "JSARRIA", email = "jsarria@ayesa-digital.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "sqlalchemy>=2.0",
+    "pydantic>=2.7",
+]
+
+[project.scripts]
+onepage-be = "onepage_be:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
