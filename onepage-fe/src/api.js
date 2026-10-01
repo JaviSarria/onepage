@@ -15,6 +15,7 @@ async function request(method, url, body) {
 
 export const api = {
   arbol: () => request('GET', '/arbol'),
+  diario: () => request('GET', '/diario'),
 
   proyectos: () => request('GET', '/proyectos'),
   crearProyecto: (data) => request('POST', '/proyectos', data),
@@ -29,5 +30,20 @@ export const api = {
   crearHijo: (tipo, ruta, parentId, data, rutaPadre = null) =>
     request('POST', `/${tipo}${rutaPadre ? '/' + rutaPadre : ''}/${parentId}/${ruta}`, data),
   actualizarHijo: (tipo, ruta, id, data) => request('PUT', `/${tipo}/${ruta}/item/${id}`, data),
-  borrarHijo: (tipo, ruta, id) => request('DELETE', `/${tipo}/${ruta}/item/${id}`)
+  borrarHijo: (tipo, ruta, id) => request('DELETE', `/${tipo}/${ruta}/item/${id}`),
+
+  async subirImagen(tipo, docId, seccion, fichero) {
+    const ext = (
+      fichero.name?.includes('.') ? fichero.name.split('.').pop() : fichero.type.split('/').pop()
+    ).toLowerCase()
+    const params = new URLSearchParams({ tipo, doc_id: docId, seccion, ext })
+    const res = await fetch(`${BASE}/assets?${params}`, {
+      method: 'POST',
+      headers: { 'Content-Type': fichero.type || 'application/octet-stream' },
+      body: fichero
+    })
+    if (!res.ok) throw new Error(`No se pudo subir la imagen: ${await res.text()}`)
+    const { nombre } = await res.json()
+    return { nombre, url: `${BASE}/assets/${nombre}` }
+  }
 }

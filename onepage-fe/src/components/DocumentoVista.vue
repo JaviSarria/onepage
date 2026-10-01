@@ -3,7 +3,7 @@ import { computed, provide, ref, watch } from 'vue'
 import { api } from '../api.js'
 import { abrirTodo, cerrarTodo } from '../store/acordeon.js'
 import { construirIndice, todasLasClaves } from '../toc.js'
-import { ESQUEMAS } from '../schema.js'
+import { COLORES_SECCION, ESQUEMAS } from '../schema.js'
 import Acordeon from './Acordeon.vue'
 import EntradaCampo from './EntradaCampo.vue'
 import MarkdownField from './MarkdownField.vue'
@@ -44,6 +44,9 @@ async function ejecutar(accion, avisarArbol = false) {
 const ctx = {
   get tipo() {
     return props.tipo
+  },
+  get id() {
+    return props.id
   },
   guardarCampo: (campo, valor) =>
     ejecutar(
@@ -99,7 +102,7 @@ async function borrarDocumento() {
     </p>
     <hr class="separador" />
 
-    <Acordeon clave="doc/cabecera" titulo="Cabecera" :nivel="2">
+    <Acordeon clave="doc/cabecera" titulo="Cabecera" :nivel="2" :color="COLORES_SECCION.cabecera">
       <dl class="ficha">
         <template v-for="c in esquema.cabecera" :key="c.campo">
           <dt>{{ c.etiqueta }}</dt>
@@ -117,7 +120,12 @@ async function borrarDocumento() {
 
     <template v-for="seccion in esquema.secciones" :key="seccion.id">
       <hr class="separador" />
-      <Acordeon :clave="`doc/${seccion.id}`" :titulo="seccion.titulo" :nivel="2">
+      <Acordeon
+        :clave="`doc/${seccion.id}`"
+        :titulo="seccion.titulo"
+        :nivel="2"
+        :color="COLORES_SECCION[seccion.id]"
+      >
         <NodoSeccion
           v-for="hijo in seccion.hijos"
           :key="hijo.id"

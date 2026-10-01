@@ -14,6 +14,7 @@ from .mixins import (
     BloquesComunesMixin,
     CabeceraMixin,
     CambioMixin,
+    CasoPlanMixin,
     CasoPruebaMixin,
     CriterioMixin,
     DespliegueMixin,
@@ -150,10 +151,19 @@ class Cambio(PkMixin, CambioMixin, OrdenMixin, Base):
     )
 
 
+class CasoPlan(PkMixin, CasoPlanMixin, OrdenMixin, Base):
+    __tablename__ = "casos_plan"
+
+    evolutivo_id: Mapped[int] = _evo_fk()
+
+
 class CasoPrueba(PkMixin, CasoPruebaMixin, OrdenMixin, Base):
     __tablename__ = "casos_prueba"
 
     evolutivo_id: Mapped[int] = _evo_fk()
+    caso_plan_id: Mapped[int] = mapped_column(
+        ForeignKey("casos_plan.id", ondelete="CASCADE"), nullable=False, unique=True, index=True
+    )
     requisito_codigo: Mapped[str] = mapped_column(String(32), default="", nullable=False)
 
 

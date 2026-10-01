@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { api } from './api.js'
 import ArbolContenido from './components/ArbolContenido.vue'
 import ArbolProyectos from './components/ArbolProyectos.vue'
+import DiarioSeguimiento from './components/DiarioSeguimiento.vue'
 import DocumentoVista from './components/DocumentoVista.vue'
 import ProyectoVista from './components/ProyectoVista.vue'
 
@@ -71,6 +72,7 @@ async function documentoCambiado(info) {
         @nuevo-proyecto="nuevoProyecto"
         @nuevo-documento="nuevoDocumento"
         @borrar-proyecto="borrarProyecto"
+        @diario="seleccionar(null)"
       />
     </aside>
 
@@ -99,6 +101,7 @@ async function documentoCambiado(info) {
           Gestión de proyectos personales: evolutivos e incidencias en una única página.
         </blockquote>
         <p>Selecciona un proyecto en el árbol de la izquierda o crea uno nuevo con el botón «+».</p>
+        <DiarioSeguimiento @abrir="seleccionar" @error="error = $event" />
       </section>
     </main>
 
@@ -145,7 +148,7 @@ async function documentoCambiado(info) {
 
 .bienvenida {
   padding: 40px;
-  max-width: 700px;
+  max-width: 900px;
 }
 
 .error {

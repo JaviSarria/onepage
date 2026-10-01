@@ -59,3 +59,60 @@ def arbol(
             }
         )
     return nodos
+
+
+def _partes(db: Session, m: Any, doc_model: type, doc_field: str, tipo: str) -> list[dict[str, Any]]:
+    docs = {d.id: d for d in crud.list_all(db, doc_model)}
+    tareas = crud.list_all(db, m.TareaSeguimiento)
+    actividades = crud.list_all(db, m.ActividadSeguimiento)
+    partes: list[dict[str, Any]] = []
+    for s in crud.list_all(db, m.Seguimiento):
+        doc = docs.get(getattr(s, doc_field))
+        if doc is None:
+            continue
+        partes.append(
+            {
+                "id": s.id,
+                "fecha": s.fecha,
+                "tiempo": s.tiempo,
+                "notas": s.notas,
+                "documento": {
+                    "tipo": tipo,
+                    "id": doc.id,
+                    "codigo": doc.codigo,
+                    "titulo": doc.titulo or "(sin titulo)",
+                    "proyecto_id": doc.proyecto_id,
+                },
+                "tareas": [
+                    {
+                        "id": t.id,
+                        "nombre": t.nombre or t.tarea_codigo or "Tarea",
+                        "descripcion": t.descripcion,
+                        "completada": t.completada,
+                        "actividades": [
+                            {"id": a.id, "descripcion": a.descripcion, "completada": a.completada}
+                            for a in actividades
+                            if a.tarea_seguimiento_id == t.id
+                        ],
+                    }
+                    for t in tareas
+                    if t.seguimiento_id == s.id
+                ],
+            }
+        )
+    return partes
+
+
+@router.get("/diario")
+def diario(
+    db_e: Session = Depends(get_evolutivos_db),
+    db_i: Session = Depends(get_incidencias_db),
+) -> list[dict[str, Any]]:
+    """Partes de seguimiento de evolutivos e incidencias, para mostrarlos como diario."""
+    proyectos = {p.id: p.nombre for p in crud.list_all(db_e, me.Proyecto)}
+    partes = _partes(db_e, me, me.Evolutivo, "evolutivo_id", "evolutivos") + _partes(
+        db_i, mi, mi.Incidencia, "incidencia_id", "incidencias"
+    )
+    for parte in partes:
+        parte["documento"]["proyecto"] = proyectos.get(parte["documento"]["proyecto_id"], "")
+    return partes

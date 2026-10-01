@@ -5,7 +5,7 @@ import EntradaCampo from './EntradaCampo.vue'
 import ListaChecklist from './ListaChecklist.vue'
 import MarkdownField from './MarkdownField.vue'
 import TablaEditable from './TablaEditable.vue'
-import { tituloTareaDesarrollo } from '../schema.js'
+import { etiquetaOrigen } from '../schema.js'
 
 const props = defineProps({
   nodo: { type: Object, required: true },
@@ -16,51 +16,54 @@ const props = defineProps({
 
 const ctx = inject('ctx')
 const clave = computed(() => `${props.claveBase}/${props.nodo.id}`)
+const seccion = computed(() => props.claveBase.split('/')[1] || '')
+// Solo los campos Descripción y Notas admiten imágenes.
+const seccionImagenes = (campo) =>
+  campo.includes('descripcion') || campo === 'notas' ? seccion.value : ''
 const items = computed(() => props.datos?.[props.nodo.recurso] || [])
 const padreId = computed(() => props.datos?.id)
 const grupos = computed(() => props.datos?.['grupos-requisito'] || [])
-const tareas = computed(() => props.datos?.tareas || [])
+// Entidades que se eligen de otra colección del documento (p. ej. Desarrollo ← Tareas de Análisis).
+const origen = computed(() => props.nodo.origen || null)
+const elementosOrigen = computed(() =>
+  origen.value ? props.datos?.[origen.value.recurso] || [] : []
+)
+const libresOrigen = computed(() => {
+  if (!origen.value) return []
+  const usados = new Set(items.value.map((item) => item[origen.value.campo]))
+  return elementosOrigen.value.filter((e) => !usados.has(e.id))
+})
 const columnas = computed(() => {
   if (!props.nodo.columnas) return []
   return props.nodo.columnas.map((columna) =>
-    columna.campo === 'grupo_id' || columna.control === 'select-dinamico-tarea'
+    columna.campo === 'grupo_id'
       ? {
           ...columna,
-          opciones:
-            columna.campo === 'grupo_id'
-              ? grupos.value.map((grupo) => ({ valor: grupo.id, etiqueta: grupo.nombre }))
-              : tareas.value.map((tarea) => ({
-                  valor: tarea.id,
-                  etiqueta: [tarea.codigo, tarea.nombre].filter(Boolean).join(' — ')
-                }))
+          opciones: grupos.value.map((grupo) => ({ valor: grupo.id, etiqueta: grupo.nombre }))
         }
       : columna
   )
 })
 
 function opcionesCampo(campo) {
-  if (campo.control === 'select-dinamico-tarea') {
-    return tareas.value.map((tarea) => ({
-      valor: tarea.id,
-      etiqueta: [tarea.codigo, tarea.nombre].filter(Boolean).join(' — ')
-    }))
+  if (campo.control === 'select-origen') {
+    return elementosOrigen.value.map((e) => ({ valor: e.id, etiqueta: etiquetaOrigen(e) }))
   }
   return campo.opciones || []
 }
 const puedeCrear = computed(() => {
   if (props.nodo.id === 'requisitos') return grupos.value.length > 0
-  if (props.nodo.id === 'tareas-desarrollo') return tareas.value.length > 0
+  if (origen.value) return libresOrigen.value.length > 0
   return true
 })
 
 function crear() {
-  if (props.nodo.id === 'requisitos' && !grupos.value.length) return
-  if (props.nodo.id === 'tareas-desarrollo' && !tareas.value.length) return
+  if (!puedeCrear.value) return
   const datos =
     props.nodo.id === 'requisitos'
       ? { grupo_id: grupos.value[0].id }
-      : props.nodo.id === 'tareas-desarrollo'
-        ? { tarea_id: tareas.value[0].id }
+      : origen.value
+        ? { [origen.value.campo]: libresOrigen.value[0].id }
         : {}
   ctx.crearHijo(props.nodo.recurso, props.nodo.rutaPadre || null, padreId.value, datos)
 }
@@ -77,12 +80,14 @@ function actualizarEntidad(item, campo, valor) {
   ctx.actualizarHijo(props.nodo.recurso, item.id, { [campo]: valor })
 }
 
+// Un texto con recurso pertenece a la entidad anidada (datos), no al documento.
+function guardarTexto(valor) {
+  if (props.nodo.recurso) actualizarEntidad(props.datos, props.nodo.campo, valor)
+  else ctx.guardarCampo(props.nodo.campo, valor)
+}
+
 function tituloEntidad(item) {
-  return props.nodo.id === 'tareas-desarrollo'
-    ? tituloTareaDesarrollo(item, tareas.value)
-    : props.nodo.clave
-      ? props.nodo.clave(item)
-      : '#' + item.id
+  return props.nodo.clave ? props.nodo.clave(item, props.datos) : '#' + item.id
 }
 </script>
 
@@ -92,7 +97,8 @@ function tituloEntidad(item) {
     <blockquote v-if="nodo.ayuda" class="md">{{ nodo.ayuda }}</blockquote>
     <MarkdownField
       :valor="datos[nodo.campo] || ''"
-      @cambiar="ctx.guardarCampo(nodo.campo, $event)"
+      :seccion="seccionImagenes(nodo.campo)"
+      @cambiar="guardarTexto"
     />
   </Acordeon>
 
@@ -111,9 +117,7 @@ function tituloEntidad(item) {
       :mensaje-crear="
         nodo.id === 'requisitos' && !puedeCrear
           ? 'Da de alta al menos un grupo de requisitos antes de crear requisitos'
-          : nodo.id === 'tareas-desarrollo' && !puedeCrear
-            ? 'Da de alta una tarea en Análisis antes de completar su Desarrollo'
-            : ''
+          : ''
       "
       @crear="crear"
       @actualizar="actualizar"
@@ -148,8 +152,16 @@ function tituloEntidad(item) {
     :insignia="String(items.length)"
   >
     <template #acciones>
-      <button type="button" @click="crear">+ {{ nodo.etiqueta }}</button>
+      <button
+        type="button"
+        :disabled="!puedeCrear"
+        :title="!puedeCrear && origen ? origen.mensaje : ''"
+        @click="crear"
+      >
+        + {{ nodo.etiqueta }}
+      </button>
     </template>
+    <p v-if="!puedeCrear && origen" class="vacio">{{ origen.mensaje }}</p>
     <p v-if="!items.length" class="vacio">Sin {{ nodo.titulo.toLowerCase() }}</p>
     <Acordeon
       v-for="item in items"
@@ -168,7 +180,7 @@ function tituloEntidad(item) {
           <dd>
             <EntradaCampo
               :valor="item[c.campo]"
-              :control="c.control === 'select-dinamico-tarea' ? 'select' : c.control"
+              :control="c.control === 'select-origen' ? 'select' : c.control"
               :opciones="opcionesCampo(c)"
               @cambiar="actualizarEntidad(item, c.campo, $event)"
             />
@@ -180,6 +192,7 @@ function tituloEntidad(item) {
         <h5>{{ t.titulo }}</h5>
         <MarkdownField
           :valor="item[t.campo] || ''"
+          :seccion="seccionImagenes(t.campo)"
           @cambiar="actualizarEntidad(item, t.campo, $event)"
         />
       </div>

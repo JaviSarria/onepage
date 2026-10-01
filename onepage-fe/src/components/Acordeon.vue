@@ -6,15 +6,25 @@ const props = defineProps({
   clave: { type: String, required: true },
   titulo: { type: String, required: true },
   nivel: { type: Number, default: 2 },
-  insignia: { type: String, default: '' }
+  insignia: { type: String, default: '' },
+  color: { type: Object, default: null }
 })
 
 const abierto = computed(() => estaAbierto(props.clave))
 const etiqueta = computed(() => 'h' + Math.min(props.nivel, 4))
+const estiloColor = computed(() =>
+  props.color ? { '--sec-fondo': props.color.fondo, '--sec-borde': props.color.borde } : null
+)
 </script>
 
 <template>
-  <section class="acordeon" :id="domId(clave)" :data-nivel="nivel">
+  <section
+    class="acordeon"
+    :class="{ coloreado: color }"
+    :style="estiloColor"
+    :id="domId(clave)"
+    :data-nivel="nivel"
+  >
     <component :is="etiqueta" class="cabecera">
       <button
         class="disparador"
@@ -94,6 +104,18 @@ const etiqueta = computed(() => 'h' + Math.min(props.nivel, 4))
   border-left: 1px solid var(--border-soft);
   margin-left: 5px;
   animation: desplegar 0.15s ease;
+}
+
+.acordeon.coloreado > .cabecera {
+  background: var(--sec-fondo);
+  border-bottom: 0;
+  border-left: 4px solid var(--sec-borde);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.acordeon.coloreado > .panel {
+  border-left: 2px solid var(--sec-borde);
 }
 
 @keyframes desplegar {

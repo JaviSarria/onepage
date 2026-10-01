@@ -1,5 +1,4 @@
 // Construye el arbol de subsecciones del documento actual (indice de navegacion derecho).
-import { tituloTareaDesarrollo } from './schema.js'
 
 function nodoHijo(nodo, datos, claveBase) {
   const clave = `${claveBase}/${nodo.id}`
@@ -10,12 +9,7 @@ function nodoHijo(nodo, datos, claveBase) {
       titulo: nodo.titulo,
       hijos: items.map((item) => ({
         clave: `${clave}/${item.id}`,
-        titulo:
-          nodo.id === 'tareas-desarrollo'
-            ? tituloTareaDesarrollo(item, datos?.tareas || [])
-            : nodo.clave
-              ? nodo.clave(item)
-              : `#${item.id}`,
+        titulo: nodo.clave ? nodo.clave(item, datos) : `#${item.id}`,
         hijos: (nodo.hijos || []).map((h) => nodoHijo(h, item, `${clave}/${item.id}`))
       }))
     }

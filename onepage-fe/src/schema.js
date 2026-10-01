@@ -24,16 +24,56 @@ export const RESULTADOS_PRUEBA = ['OK', 'NOK', 'BLOQUEADA', 'NO EJECUTADA']
 export const COBERTURAS = ['Pendiente', 'Parcial', 'Validada', 'No aplica', 'Bloqueada']
 export const TIPOS_RECURSO = ['base_datos', 'servicio']
 
+// Colores por id de sección: secciones homónimas comparten color en evolutivos e incidencias.
+export const COLORES_SECCION = {
+  cabecera: { fondo: '#f6f8fa', borde: '#afb8c1' },
+  requerimiento: { fondo: '#ddf4ff', borde: '#54aeff' },
+  problema: { fondo: '#ffebe9', borde: '#ff8182' },
+  analisis: { fondo: '#fbefff', borde: '#c297ff' },
+  desarrollo: { fondo: '#dafbe1', borde: '#4ac26b' },
+  pruebas: { fondo: '#fff1e5', borde: '#fb8f44' },
+  dod: { fondo: '#fff8c5', borde: '#d4a72c' },
+  despliegue: { fondo: '#d8f5f3', borde: '#3fb8af' },
+  reuniones: { fondo: '#ffeff7', borde: '#ff80c8' },
+  seguimiento: { fondo: '#eef0ff', borde: '#8c95ff' }
+}
+
 const texto = (id, titulo, campo, ayuda = '') => ({ tipo: 'texto', id, titulo, campo, ayuda })
 
-export function tituloTareaDesarrollo(item, tareas = []) {
-  const tarea = tareas.find((candidate) => candidate.id === item.tarea_id)
-  return tarea
-    ? [tarea.codigo, tarea.nombre].filter(Boolean).join(' — ')
-    : item.tarea_id
-      ? `Tarea ${item.tarea_id}`
-      : 'Tarea desarrollada'
+export const etiquetaOrigen = (e) => [e.codigo, e.nombre].filter(Boolean).join(' — ')
+
+// Título de una entidad enlazada a otra del documento a través de `campo` (p. ej. tarea_id).
+function tituloOrigen(item, campo, origenes = [], porDefecto = '') {
+  const origen = origenes.find((candidato) => candidato.id === item[campo])
+  return origen ? etiquetaOrigen(origen) || `#${origen.id}` : porDefecto
 }
+
+const casosPlan = {
+  tipo: 'entidades',
+  id: 'casos-plan',
+  titulo: 'Plan de pruebas',
+  recurso: 'casos-plan',
+  etiqueta: 'caso',
+  clave: (c) => etiquetaOrigen(c) || 'Caso',
+  campos: [
+    { campo: 'codigo', etiqueta: 'Id', ancho: 'codigo' },
+    { campo: 'nombre', etiqueta: 'Nombre' },
+    { campo: 'criterio_codigo', etiqueta: 'Criterio de aceptación' }
+  ],
+  textos: [
+    { campo: 'precondiciones', titulo: 'Precondiciones' },
+    { campo: 'pasos', titulo: 'Pasos' },
+    { campo: 'resultado_esperado', titulo: 'Resultado esperado' }
+  ],
+  hijos: []
+}
+
+const origenCasoPlan = {
+  campo: 'caso_plan_id',
+  recurso: 'casos-plan',
+  mensaje: 'Para añadir un caso de prueba, da de alta antes un caso en Análisis › Plan de pruebas'
+}
+const campoCasoPlan = { campo: 'caso_plan_id', etiqueta: 'Caso del plan', control: 'select-origen' }
 
 const ejecuciones = {
   tipo: 'tabla',
@@ -91,7 +131,10 @@ const seguimientos = {
     { campo: 'tiempo', etiqueta: 'Tiempo (h)', control: 'numero' }
   ],
   textos: [],
-  hijos: [tareasSeguimiento, { tipo: 'texto', id: 'notas', titulo: 'Notas', campo: 'notas' }]
+  hijos: [
+    tareasSeguimiento,
+    { tipo: 'texto', id: 'notas', titulo: 'Notas', campo: 'notas', recurso: 'seguimientos' }
+  ]
 }
 
 const reuniones = {
@@ -142,9 +185,14 @@ const desarrollo = {
       titulo: 'Tareas desarrolladas',
       recurso: 'tareas-desarrollo',
       etiqueta: 'tarea desarrollada',
-      clave: (t) => tituloTareaDesarrollo(t),
+      clave: (t, doc) => tituloOrigen(t, 'tarea_id', doc?.tareas, 'Tarea desarrollada'),
+      origen: {
+        campo: 'tarea_id',
+        recurso: 'tareas',
+        mensaje: 'Para añadir una tarea desarrollada, da de alta antes una tarea en Análisis'
+      },
       campos: [
-        { campo: 'tarea_id', etiqueta: 'Id tarea de Análisis', control: 'select-dinamico-tarea' },
+        { campo: 'tarea_id', etiqueta: 'Id tarea de Análisis', control: 'select-origen' },
         { campo: 'estado', etiqueta: 'Estado', control: 'select', opciones: ESTADOS_TAREA }
       ],
       textos: [],
@@ -346,7 +394,8 @@ export const ESQUEMA_EVOLUTIVO = {
             { campo: 'problemas', titulo: 'Problemas' }
           ],
           hijos: [recursosTarea, actividadesTarea]
-        }
+        },
+        casosPlan
       ]
     },
     desarrollo,
@@ -361,12 +410,11 @@ export const ESQUEMA_EVOLUTIVO = {
           titulo: 'Casos de prueba',
           recurso: 'casos-prueba',
           etiqueta: 'caso',
-          clave: (c) => [c.codigo, c.nombre].filter(Boolean).join(' — ') || 'Caso',
+          clave: (c, doc) => tituloOrigen(c, 'caso_plan_id', doc?.['casos-plan'], 'Caso'),
+          origen: origenCasoPlan,
           campos: [
-            { campo: 'codigo', etiqueta: 'Id', ancho: 'codigo' },
-            { campo: 'nombre', etiqueta: 'Nombre' },
+            campoCasoPlan,
             { campo: 'requisito_codigo', etiqueta: 'Requisito', ancho: 'codigo' },
-            { campo: 'criterio_codigo', etiqueta: 'Criterio' },
             {
               campo: 'estado',
               etiqueta: 'Estado',
@@ -377,12 +425,7 @@ export const ESQUEMA_EVOLUTIVO = {
             { campo: 'incidencias', etiqueta: 'Incidencias' },
             { campo: 'es_regresion', etiqueta: 'Regresión', control: 'check' }
           ],
-          textos: [
-            { campo: 'precondiciones', titulo: 'Precondiciones' },
-            { campo: 'datos', titulo: 'Datos de la prueba' },
-            { campo: 'pasos', titulo: 'Pasos' },
-            { campo: 'resultado_esperado', titulo: 'Resultado esperado' }
-          ],
+          textos: [{ campo: 'datos', titulo: 'Datos de la prueba' }],
           hijos: [ejecuciones]
         }
       ]
@@ -517,7 +560,8 @@ export const ESQUEMA_INCIDENCIA = {
             { campo: 'problemas', titulo: 'Problemas' }
           ],
           hijos: [recursosTarea, actividadesTarea]
-        }
+        },
+        casosPlan
       ]
     },
     desarrollo,
@@ -537,12 +581,12 @@ export const ESQUEMA_INCIDENCIA = {
           titulo: 'Casos de prueba',
           recurso: 'casos-prueba',
           etiqueta: 'caso',
-          clave: (c) =>
-            [c.codigo, c.nombre].filter(Boolean).join(' — ') + (c.es_regresion ? ' (regresión)' : ''),
+          clave: (c, doc) =>
+            tituloOrigen(c, 'caso_plan_id', doc?.['casos-plan'], 'Caso') +
+            (c.es_regresion ? ' (regresión)' : ''),
+          origen: origenCasoPlan,
           campos: [
-            { campo: 'codigo', etiqueta: 'Id' },
-            { campo: 'nombre', etiqueta: 'Nombre' },
-            { campo: 'criterio_codigo', etiqueta: 'Criterio' },
+            campoCasoPlan,
             {
               campo: 'estado',
               etiqueta: 'Estado',
@@ -554,12 +598,9 @@ export const ESQUEMA_INCIDENCIA = {
             { campo: 'es_regresion', etiqueta: 'Regresión', control: 'check' }
           ],
           textos: [
-            { campo: 'precondiciones', titulo: 'Precondiciones' },
             { campo: 'datos', titulo: 'Datos de la prueba' },
             { campo: 'datos_usados', titulo: 'Datos usados para el caso' },
-            { campo: 'pasos', titulo: 'Pasos' },
-            { campo: 'pasos_dados', titulo: 'Pasos dados' },
-            { campo: 'resultado_esperado', titulo: 'Resultado esperado' }
+            { campo: 'pasos_dados', titulo: 'Pasos dados' }
           ],
           hijos: [ejecuciones]
         }

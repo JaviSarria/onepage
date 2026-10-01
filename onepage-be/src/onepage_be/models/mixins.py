@@ -109,14 +109,17 @@ class CambioMixin:
     commit: Mapped[str] = mapped_column(String(128), default="", nullable=False)
 
 
-class CasoPruebaMixin:
+class CasoPlanMixin:
     codigo: Mapped[str] = mapped_column(String(32), default="", nullable=False)
     nombre: Mapped[str] = mapped_column(String(255), default="", nullable=False)
     criterio_codigo: Mapped[str] = mapped_column(String(32), default="", nullable=False)
     precondiciones: Mapped[str] = mapped_column(Text, default="", nullable=False)
-    datos: Mapped[str] = mapped_column(Text, default="", nullable=False)
     pasos: Mapped[str] = mapped_column(Text, default="", nullable=False)
     resultado_esperado: Mapped[str] = mapped_column(Text, default="", nullable=False)
+
+
+class CasoPruebaMixin:
+    datos: Mapped[str] = mapped_column(Text, default="", nullable=False)
     estado: Mapped[str] = mapped_column(String(32), default="NO EJECUTADA", nullable=False)
     responsable: Mapped[str] = mapped_column(String(128), default="", nullable=False)
     incidencias: Mapped[str] = mapped_column(Text, default="", nullable=False)

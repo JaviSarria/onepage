@@ -6,6 +6,7 @@ from collections.abc import Iterator
 
 from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.schema import CreateIndex, CreateTable
 
 from .config import EVOLUTIVOS_DB_URL, INCIDENCIAS_DB_URL
 
@@ -61,6 +62,61 @@ def init_databases() -> None:
     EvolutivosBase.metadata.create_all(bind=evolutivos_engine)
     IncidenciasBase.metadata.create_all(bind=incidencias_engine)
     _migrate_existing_databases()
+    _migrar_plan_pruebas()
+
+
+_CAMPOS_PLAN = ("codigo", "nombre", "criterio_codigo", "precondiciones", "pasos", "resultado_esperado")
+
+
+def _migrar_plan_pruebas() -> None:
+    """Mueve la definicion de los casos de prueba a casos_plan (Analisis > Plan de pruebas)."""
+    from .models import evolutivo as me
+    from .models import incidencia as mi
+
+    for engine, modelo, padre in (
+        (evolutivos_engine, me.CasoPrueba, "evolutivo_id"),
+        (incidencias_engine, mi.CasoPrueba, "incidencia_id"),
+    ):
+        antiguas = {c["name"] for c in inspect(engine).get_columns("casos_prueba")}
+        if "caso_plan_id" in antiguas:
+            continue
+        tabla = modelo.__table__
+        nuevas = [c.name for c in tabla.columns if c.name in antiguas]
+        plan = ", ".join(f'"{c}"' for c in (padre, "id", *_CAMPOS_PLAN, "orden"))
+        copia = ", ".join(f'"{c}"' for c in nuevas)
+        ddl = str(CreateTable(tabla).compile(engine)).replace(
+            "CREATE TABLE casos_prueba", "CREATE TABLE casos_prueba_new", 1
+        )
+        indices = [str(CreateIndex(i).compile(engine)) for i in tabla.indexes]
+
+        raw = engine.raw_connection()
+        try:
+            con = raw.driver_connection
+            nivel = con.isolation_level
+            con.isolation_level = None
+            # Con las FK activas, DROP TABLE borraria en cascada las ejecuciones.
+            con.execute("PRAGMA foreign_keys=OFF")
+            try:
+                con.execute("BEGIN")
+                con.execute(f"INSERT INTO casos_plan ({plan}) SELECT {plan} FROM casos_prueba")
+                con.execute(ddl)
+                con.execute(
+                    f'INSERT INTO casos_prueba_new ({copia}, "caso_plan_id") '
+                    f"SELECT {copia}, id FROM casos_prueba"
+                )
+                con.execute("DROP TABLE casos_prueba")
+                con.execute("ALTER TABLE casos_prueba_new RENAME TO casos_prueba")
+                for indice in indices:
+                    con.execute(indice)
+                con.execute("COMMIT")
+            except Exception:
+                con.execute("ROLLBACK")
+                raise
+            finally:
+                con.execute("PRAGMA foreign_keys=ON")
+                con.isolation_level = nivel
+        finally:
+            raw.close()
 
 
 def _migrate_existing_databases() -> None:

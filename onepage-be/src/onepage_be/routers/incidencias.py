@@ -19,6 +19,7 @@ CHILDREN: tuple[Child, ...] = (
         "IncActividadDesarrollo",
         parent_path="tareas-desarrollo",
     ),
+    Child("casos-plan", m.CasoPlan, "incidencia_id", "IncCasoPlan"),
     Child("casos-prueba", m.CasoPrueba, "incidencia_id", "IncCasoPrueba"),
     Child("definition-of-done", m.DefinitionOfDone, "incidencia_id", "IncDod"),
     Child("registros-despliegue", m.Despliegue, "incidencia_id", "IncDespliegue"),

@@ -5,7 +5,7 @@ const props = defineProps({
   nodos: { type: Array, default: () => [] },
   seleccion: { type: Object, default: null }
 })
-const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'borrar-proyecto'])
+const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'borrar-proyecto', 'diario'])
 
 const abiertos = ref(new Set())
 const filtro = ref('')
@@ -42,6 +42,16 @@ function activo(tipo, id) {
 <template>
   <nav class="arbol" aria-label="Proyectos">
     <header>
+      <button
+        type="button"
+        class="boton-diario"
+        :class="{ activo: !seleccion }"
+        title="Diario de seguimiento"
+        aria-label="Diario de seguimiento"
+        @click="emit('diario')"
+      >
+        📓
+      </button>
       <h2>Proyectos</h2>
       <button type="button" class="primario" @click="emit('nuevo-proyecto')">+</button>
     </header>
@@ -106,16 +116,28 @@ function activo(tipo, id) {
 header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
 h2 {
+  flex: 1;
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--fg-muted);
   margin: 0;
+}
+
+.boton-diario {
+  padding: 2px 6px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.boton-diario.activo {
+  background: #eef0ff;
+  border-color: #8c95ff;
 }
 
 .filtro {
