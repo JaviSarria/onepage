@@ -1,0 +1,17 @@
+services:
+
+  onepage-be:
+    build:
+      context: ./onepage-be
+    container_name: onepage-be
+    ports:
+      - "8000:8000"
+
+  onepage-fe:
+    build:
+      context: ./onepage-fe
+    container_name: onepage-fe
+    ports:
+      - "8080:80"
+    depends_on:
+      - onepage-be
