@@ -1,5 +1,5 @@
 .run/
-onepage-be/data/
+
 onepage-be/.venv/
 onepage-fe/node_modules/
 onepage-fe/dist/
