@@ -16,6 +16,11 @@ async function request(method, url, body) {
 export const api = {
   arbol: () => request('GET', '/arbol'),
   diario: () => request('GET', '/diario'),
+  buscar: (q, tipo = 'todos', limite = 150) =>
+    request(
+      'GET',
+      `/buscar?q=${encodeURIComponent(q)}&tipo=${encodeURIComponent(tipo)}&limite=${limite}`
+    ),
 
   proyectos: () => request('GET', '/proyectos'),
   crearProyecto: (data) => request('POST', '/proyectos', data),

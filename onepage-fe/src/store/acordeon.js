@@ -33,6 +33,12 @@ export function irA(clave) {
   abrir(clave)
   requestAnimationFrame(() => {
     const el = document.getElementById(domId(clave))
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      el.classList.remove('destacado-temporal')
+      void el.offsetWidth
+      el.classList.add('destacado-temporal')
+      setTimeout(() => el.classList.remove('destacado-temporal'), 2600)
+    }
   })
 }

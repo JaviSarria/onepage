@@ -105,11 +105,13 @@ function alSoltar(evento) {
     <textarea
       v-else
       ref="area"
+      class="markdown-textarea"
       v-model="local"
       :placeholder="placeholder || (admiteImagenes ? 'Puedes pegar (Ctrl+V) o arrastrar imágenes aquí' : '')"
       rows="4"
       @blur="guardar"
     ></textarea>
+    <div v-if="!vista" class="markdown-preview-print md" v-html="html"></div>
     <p v-if="subiendo" class="aviso">Subiendo imagen…</p>
     <p v-if="error" class="aviso error">{{ error }}</p>
   </div>
@@ -173,5 +175,25 @@ function alSoltar(evento) {
 
 .aviso.error {
   color: var(--danger);
+}
+.markdown-preview-print {
+  display: none;
+}
+
+@media print {
+  .markdown-toggle,
+  .markdown-textarea,
+  .aviso {
+    display: none !important;
+  }
+
+  .markdown-preview,
+  .markdown-preview-print {
+    display: block !important;
+    border: none !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    background: transparent !important;
+  }
 }
 </style>

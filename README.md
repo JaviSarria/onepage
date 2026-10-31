@@ -211,6 +211,8 @@ Variables opcionales: `make start BE_PORT=8100 FE_PORT=5200`.
 6. **Navegar**: usa el índice derecho para saltar a cualquier subsección; el acordeón se abre
    automáticamente. Los botones *Expandir todo* / *Contraer todo* actúan sobre todo el documento.
 7. **Filtrar**: el buscador del árbol izquierdo filtra por título o código de documento.
+8. **Buscar en cualquier parte**: el botón `🔍` de la cabecera del árbol abre la zona de búsqueda global y resultados. Busca cualquier texto en títulos, narrativas, tablas, tareas, requisitos, notas de reuniones y partes diarios, con salto directo a la sección correspondiente.
+9. **Exportar a PDF**: el botón `📄 Exportar a PDF` de la cabecera del documento formatea el evolutivo o incidencia completo (desplegando todas las secciones, renderizando todo el contenido Markdown a tipografía vectorial limpia, ocultando controles de edición y ajustando saltos de página).
 
 ### Vista de proyecto
 
@@ -272,6 +274,7 @@ Prefijo común: `/api`.
 | Método y ruta | Descripción |
 | --- | --- |
 | `GET /salud` | Comprobación de vida |
+| `GET /buscar` | Búsqueda global de texto en proyectos, documentos y subcolecciones (`?q=&tipo=&limite=`) |
 | `GET /arbol` | Proyectos con sus evolutivos e incidencias (árbol izquierdo) |
 | `GET/POST /proyectos` | Listado y alta (replicado en ambas bases) |
 | `GET/PUT/DELETE /proyectos/{id}` | Detalle, modificación y baja |

@@ -160,3 +160,220 @@ hr.separador {
   border-top: 1px solid var(--border-soft);
   margin: 20px 0;
 }
+
+/* Resaltado de busqueda */
+mark.resaltado {
+  background-color: #fff8c5;
+  color: #1f2328;
+  font-weight: 600;
+  padding: 1px 3px;
+  border-radius: 3px;
+  border-bottom: 2px solid #d4a72c;
+}
+
+@keyframes pulso-destacado {
+  0% { box-shadow: 0 0 0 3px var(--accent); background-color: var(--accent-soft); }
+  60% { box-shadow: 0 0 0 3px var(--accent); background-color: var(--accent-soft); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.destacado-temporal {
+  animation: pulso-destacado 2.5s ease-out;
+}
+
+/* Reglas de exportacion a PDF e impresion */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm 12mm 15mm 12mm;
+  }
+
+  html,
+  body,
+  #app,
+  .disposicion,
+  .centro,
+  .documento {
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    box-shadow: none !important;
+  }
+
+  .disposicion {
+    display: block !important;
+  }
+
+  .centro {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ocultar interfaz interactiva y navegacion */
+  .panel.izquierda,
+  .panel.derecha,
+  .barra .botones,
+  .botones,
+  button,
+  .boton-limpiar,
+  .banner-busqueda,
+  .anadir,
+  .acciones-col,
+  .markdown-toggle,
+  .markdown-textarea,
+  .acciones,
+  .boton,
+  .aviso,
+  .chevron {
+    display: none !important;
+  }
+
+  /* Cabecera formal de documento en PDF */
+  .cabecera-impresion {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #0969da;
+    padding-bottom: 6px;
+    margin-bottom: 20px;
+    font-size: 11px;
+    color: #59636e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .barra h1 {
+    font-size: 22px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .meta {
+    margin-bottom: 16px !important;
+  }
+
+  .etiqueta-estado {
+    border: 1px solid #afb8c1 !important;
+    background: #f6f8fa !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Todas las secciones del acordeon expandidas */
+  .acordeon {
+    margin: 0 0 16px !important;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  .acordeon .cabecera {
+    background: transparent !important;
+    margin-bottom: 8px !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .acordeon .disparador {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    cursor: default !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  .acordeon .panel {
+    display: block !important;
+    padding: 0 !important;
+  }
+
+  /* Control de saltos de pagina */
+  h1, h2, h3, h4, h5, .acordeon .cabecera {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  table, tr, td, th {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .bloque-texto,
+  .tarjeta,
+  dl.ficha,
+  .checklist {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Renderizado del contenido Markdown formateado */
+  .markdown-preview,
+  .markdown-preview-print {
+    display: block !important;
+    border: none !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+  }
+
+  .markdown-preview img,
+  .markdown-preview-print img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+
+  .markdown-preview pre,
+  .markdown-preview-print pre {
+    border: 1px solid #d1d9e0 !important;
+    background: #f6f8fa !important;
+    page-break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Tablas en PDF */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin: 8px 0 !important;
+  }
+
+  th, td {
+    border: 1px solid #d1d9e0 !important;
+    padding: 4px 8px !important;
+  }
+
+  th {
+    background: #f6f8fa !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Campos limpios sin aspecto de formulario */
+  input[type='text'],
+  input[type='number'],
+  select,
+  textarea {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    color: inherit !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
+
+  select {
+    background-image: none !important;
+  }
+
+  /* Evidencias e hipervinculos */
+  a {
+    color: #0969da !important;
+    text-decoration: underline !important;
+  }
+}

@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import CORS_ORIGINS
 from .database import init_databases
-from .routers import assets, evolutivos, incidencias, proyectos, tree
+from .routers import assets, evolutivos, incidencias, proyectos, search, tree
 
 
 @asynccontextmanager
@@ -38,6 +38,7 @@ app.include_router(tree.router)
 app.include_router(evolutivos.router)
 app.include_router(incidencias.router)
 app.include_router(assets.router)
+app.include_router(search.router)
 
 
 @app.get("/api/salud", tags=["sistema"])

@@ -5,7 +5,7 @@ const props = defineProps({
   nodos: { type: Array, default: () => [] },
   seleccion: { type: Object, default: null }
 })
-const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'borrar-proyecto', 'diario'])
+const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'borrar-proyecto', 'diario', 'buscar'])
 
 const abiertos = ref(new Set())
 const filtro = ref('')
@@ -52,10 +52,31 @@ function activo(tipo, id) {
       >
         📓
       </button>
+      <button
+        type="button"
+        class="boton-buscar"
+        :class="{ activo: seleccion?.tipo === 'busqueda' }"
+        title="Búsqueda global"
+        aria-label="Búsqueda global"
+        @click="emit('buscar')"
+      >
+        🔍
+      </button>
       <h2>Proyectos</h2>
       <button type="button" class="primario" @click="emit('nuevo-proyecto')">+</button>
     </header>
-    <input v-model="filtro" type="search" placeholder="Filtrar..." class="filtro" />
+    <div class="zona-filtro-arbol">
+      <input v-model="filtro" type="search" placeholder="Filtrar árbol..." class="filtro" />
+      <button
+        v-if="filtro.trim()"
+        type="button"
+        class="boton-buscar-filtro"
+        title="Buscar este texto en todo el contenido"
+        @click="emit('buscar', filtro)"
+      >
+        🔍 Buscar «{{ filtro }}» en todo
+      </button>
+    </div>
 
     <ul role="tree">
       <li v-for="p in proyectosVisibles()" :key="p.id" role="treeitem" :aria-expanded="abiertos.has(p.id)">
@@ -138,6 +159,38 @@ h2 {
 .boton-diario.activo {
   background: #eef0ff;
   border-color: #8c95ff;
+}
+
+.boton-buscar {
+  padding: 2px 6px;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.boton-buscar.activo {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.zona-filtro-arbol {
+  margin-bottom: 8px;
+}
+
+.boton-buscar-filtro {
+  margin-top: 4px;
+  width: 100%;
+  font-size: 12px;
+  padding: 4px 6px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.boton-buscar-filtro:hover {
+  background: #cceeff;
 }
 
 .filtro {

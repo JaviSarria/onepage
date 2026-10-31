@@ -11,9 +11,11 @@ import NodoSeccion from './NodoSeccion.vue'
 
 const props = defineProps({
   tipo: { type: String, required: true },
-  id: { type: Number, required: true }
+  id: { type: Number, required: true },
+  saltarA: { type: String, default: '' },
+  terminoBusqueda: { type: String, default: '' }
 })
-const emit = defineEmits(['indice', 'cambiado', 'error'])
+const emit = defineEmits(['indice', 'cambiado', 'error', 'volver-busqueda'])
 
 const doc = ref(null)
 const cargando = ref(false)
@@ -65,10 +67,47 @@ watch(indice, (v) => emit('indice', v), { immediate: true })
 watch(
   () => [props.tipo, props.id],
   () => {
-    recargar().then(() => abrirTodo(['doc/cabecera', ...esquema.value.secciones.map((s) => `doc/${s.id}`)]))
+    recargar().then(() => {
+      abrirTodo(['doc/cabecera', ...esquema.value.secciones.map((s) => `doc/${s.id}`)])
+      if (props.saltarA) {
+        setTimeout(() => irA(props.saltarA), 150)
+      }
+    })
   },
   { immediate: true }
 )
+
+watch(
+  () => props.saltarA,
+  (nueva) => {
+    if (nueva) {
+      setTimeout(() => irA(nueva), 150)
+    }
+  }
+)
+
+const fechaImpresion = computed(() =>
+  new Date().toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+)
+
+function exportarPdf() {
+  expandirTodo()
+  const tituloOriginal = document.title
+  const prefijo = doc.value?.codigo ? `${doc.value.codigo} - ` : ''
+  const tituloDoc = doc.value?.titulo || 'Documento'
+  document.title = `${prefijo}${tituloDoc}`
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      window.print()
+      document.title = tituloOriginal
+    }, 180)
+  })
+}
 
 function expandirTodo() {
   abrirTodo(todasLasClaves(indice.value))
@@ -87,9 +126,24 @@ async function borrarDocumento() {
 
 <template>
   <article v-if="doc" class="md documento">
+    <div class="cabecera-impresion">
+      <span class="logo-impresion">OnePage · {{ esquema.etiqueta }}</span>
+      <span class="fecha-impresion">Exportado el {{ fechaImpresion }}</span>
+    </div>
+    <div v-if="terminoBusqueda" class="banner-busqueda">
+      <span>
+        🔍 Coincidencia para <strong>«{{ terminoBusqueda }}»</strong>
+      </span>
+      <button type="button" class="enlace-volver" @click="emit('volver-busqueda')">
+        ← Volver a resultados de búsqueda
+      </button>
+    </div>
     <div class="barra">
       <h1>{{ doc.titulo || '(sin título)' }}</h1>
       <div class="botones">
+        <button type="button" class="primario" title="Exportar este documento a formato PDF" @click="exportarPdf">
+          📄 Exportar a PDF
+        </button>
         <button type="button" @click="expandirTodo">Expandir todo</button>
         <button type="button" @click="cerrarTodo()">Contraer todo</button>
         <button type="button" class="peligro" @click="borrarDocumento">Eliminar</button>
@@ -186,5 +240,35 @@ async function borrarDocumento() {
 .estado {
   padding: 24px;
   color: var(--fg-muted);
+}
+.banner-busqueda {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.enlace-volver {
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.enlace-volver:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.cabecera-impresion {
+  display: none;
 }
 </style>
