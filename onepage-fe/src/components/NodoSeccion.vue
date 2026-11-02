@@ -98,6 +98,7 @@ function tituloEntidad(item) {
     <MarkdownField
       :valor="datos[nodo.campo] || ''"
       :seccion="seccionImagenes(nodo.campo)"
+      :expandir="true"
       @cambiar="guardarTexto"
     />
   </Acordeon>
@@ -193,6 +194,7 @@ function tituloEntidad(item) {
         <MarkdownField
           :valor="item[t.campo] || ''"
           :seccion="seccionImagenes(t.campo)"
+          :expandir="true"
           @cambiar="actualizarEntidad(item, t.campo, $event)"
         />
       </div>

@@ -9,11 +9,17 @@ const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'b
 
 const abiertos = ref(new Set())
 const filtro = ref('')
+const tema = ref(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
 
 function alternar(id) {
   const s = new Set(abiertos.value)
   s.has(id) ? s.delete(id) : s.add(id)
   abiertos.value = s
+}
+
+function alternarTema() {
+  tema.value = tema.value === 'light' ? 'dark' : 'light'
+  document.documentElement.dataset.theme = tema.value
 }
 
 function coincide(texto) {
@@ -125,6 +131,11 @@ function activo(tipo, id) {
       </li>
       <li v-if="!proyectosVisibles().length" class="vacio">No hay proyectos</li>
     </ul>
+    <footer class="pie-arbol">
+      <button type="button" class="boton-tema" @click="alternarTema">
+        {{ tema === 'light' ? '🌙' : '☀️' }}
+      </button>
+    </footer>
   </nav>
 </template>
 
@@ -132,6 +143,9 @@ function activo(tipo, id) {
 .arbol {
   padding: 12px;
   font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 header {
@@ -267,5 +281,14 @@ ul[role='tree'] {
   color: var(--fg-muted);
   font-style: italic;
   padding: 2px 8px;
+}
+
+.pie-arbol {
+  margin-top: auto;
+  padding: 8px 0 4px;
+}
+
+.boton-tema {
+  width: auto;
 }
 </style>

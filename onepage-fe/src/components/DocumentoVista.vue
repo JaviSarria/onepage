@@ -26,6 +26,13 @@ async function recargar() {
   cargando.value = true
   try {
     doc.value = await api.documento(props.tipo, props.id)
+    const abiertos = new Set(['doc/cabecera'])
+    for (const seccion of esquema.value.secciones) {
+      const clave = `doc/${seccion.id}`
+      abiertos.add(clave)
+      recogerRellenos(seccion.hijos, doc.value, clave, abiertos)
+    }
+    abrirTodo([...abiertos])
   } catch (e) {
     emit('error', e.message)
   } finally {
@@ -93,6 +100,32 @@ const fechaImpresion = computed(() =>
     year: 'numeric'
   })
 )
+
+// Un campo cuenta como relleno cuando su contenido tiene texto (Markdown incluido).
+function esRelleno(valor) {
+  return typeof valor === 'string' && valor.trim().length > 0
+}
+
+// Recorre los hijos del esquema y abre los acordeones cuyo campo tiene contenido.
+function recogerRellenos(hijos, datos, claveBase, abiertos) {
+  for (const hijo of hijos || []) {
+    const clave = `${claveBase}/${hijo.id}`
+    if (hijo.tipo === 'texto') {
+      if (esRelleno(datos?.[hijo.campo])) abiertos.add(clave)
+    } else if (hijo.tipo === 'checklist') {
+      const items = datos?.[hijo.recurso] || []
+      if (items.some((i) => esRelleno(i?.[hijo.campo]))) abiertos.add(clave)
+    } else if (hijo.tipo === 'entidades') {
+      for (const item of datos?.[hijo.recurso] || []) {
+        const itemClave = `${clave}/${item.id}`
+        for (const t of hijo.textos || []) {
+          if (esRelleno(item?.[t.campo])) abiertos.add(itemClave)
+        }
+        if (hijo.hijos?.length) recogerRellenos(hijo.hijos, item, itemClave, abiertos)
+      }
+    }
+  }
+}
 
 function exportarPdf() {
   expandirTodo()

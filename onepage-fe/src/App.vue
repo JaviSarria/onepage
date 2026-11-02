@@ -18,6 +18,38 @@ const saltarA = ref('')
 const terminoBusquedaActivo = ref('')
 const ultimaSeleccion = ref(null)
 
+// Anchos de las columnas laterales (el centro se ajusta con el espacio disponible).
+const anchoIzquierda = ref(290)
+const anchoDerecha = ref(270)
+
+const estiloDisposicion = computed(() => ({
+  gridTemplateColumns: `${anchoIzquierda.value}px 6px minmax(0, 1fr) 6px ${anchoDerecha.value}px`,
+  '--ancho-izq': `${anchoIzquierda.value}px`
+}))
+
+function iniciarRedimension(parte) {
+  const alMover = (evento) => {
+    const total = window.innerWidth
+    if (parte === 'izquierda') {
+      anchoIzquierda.value = Math.min(
+        Math.max(event.clientX - 3, 160),
+        Math.max(0, total - 160 - anchoDerecha.value)
+      )
+    } else {
+      anchoDerecha.value = Math.min(
+        Math.max(total - event.clientX + 3, 160),
+        Math.max(0, total - anchoIzquierda.value - 160)
+      )
+    }
+  }
+  const alSoltar = () => {
+    window.removeEventListener('mousemove', alMover)
+    window.removeEventListener('mouseup', alSoltar)
+  }
+  window.addEventListener('mousemove', alMover)
+  window.addEventListener('mouseup', alSoltar)
+}
+
 const proyectoSeleccionado = computed(() =>
   seleccion.value?.tipo === 'proyecto'
     ? arbol.value.find((p) => p.id === seleccion.value.id)
@@ -115,7 +147,7 @@ async function documentoCambiado(info) {
 </script>
 
 <template>
-  <div class="disposicion">
+  <div class="disposicion" :style="estiloDisposicion">
     <aside class="panel izquierda">
       <ArbolProyectos
         :nodos="arbol"
@@ -128,6 +160,8 @@ async function documentoCambiado(info) {
         @buscar="abrirBusqueda($event || '')"
       />
     </aside>
+
+    <div class="divisor" @mousedown="iniciarRedimension('izquierda')"></div>
 
     <main class="centro">
       <p v-if="error" class="error">{{ error }}</p>
@@ -179,6 +213,8 @@ async function documentoCambiado(info) {
       </section>
     </main>
 
+    <div class="divisor derecho" @mousedown="iniciarRedimension('derecha')"></div>
+
     <aside class="panel derecha">
       <template v-if="seleccion?.tipo === 'busqueda'">
         <h2>Búsqueda global</h2>
@@ -206,7 +242,7 @@ async function documentoCambiado(info) {
 <style scoped>
 .disposicion {
   display: grid;
-  grid-template-columns: 290px minmax(0, 1fr) 270px;
+  grid-template-columns: 290px 6px minmax(0, 1fr) 6px 270px;
   height: 100%;
 }
 
@@ -216,10 +252,33 @@ async function documentoCambiado(info) {
 }
 
 .izquierda {
+  grid-column: 1;
   border-right: 1px solid var(--border);
 }
 
+.divisor {
+  grid-column: 2;
+  cursor: col-resize;
+  background: var(--border-soft);
+}
+
+.centro {
+  grid-column: 3;
+  overflow: auto;
+}
+
+.divisor.derecho {
+  grid-column: 4;
+  cursor: col-resize;
+  background: var(--border-soft);
+}
+
+.divisor:hover {
+  background: var(--accent);
+}
+
 .derecha {
+  grid-column: 5;
   border-left: 1px solid var(--border);
   padding: 12px;
 }
@@ -243,10 +302,6 @@ async function documentoCambiado(info) {
   margin: 8px 0 0;
 }
 
-.centro {
-  overflow: auto;
-}
-
 .bienvenida {
   padding: 40px;
   max-width: 900px;
@@ -268,9 +323,12 @@ async function documentoCambiado(info) {
 
 @media (max-width: 1100px) {
   .disposicion {
-    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-columns: var(--ancho-izq, 240px) 6px minmax(0, 1fr) !important;
   }
   .derecha {
+    display: none;
+  }
+  .divisor.derecho {
     display: none;
   }
 }

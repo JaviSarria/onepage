@@ -7,12 +7,22 @@ const props = defineProps({
   valor: { type: String, default: '' },
   placeholder: { type: String, default: '' },
   // Id de la sección del documento; si se indica, se permiten imágenes (pegar/arrastrar).
-  seccion: { type: String, default: '' }
+  seccion: { type: String, default: '' },
+  // Expande la previsualización de Markdown cuando el campo tiene contenido.
+  expandir: { type: Boolean, default: false }
 })
 const emit = defineEmits(['cambiar'])
 const ctx = inject('ctx', null)
-const vista = ref(false)
+const vistaManual = ref(false)
 const local = ref(props.valor)
+const relleno = computed(() => String(props.valor ?? '').trim().length > 0)
+// true = se muestra la previsualización de Markdown; false = editor (textarea).
+const vista = computed(() =>
+  props.expandir ? !vistaManual.value && relleno.value : vistaManual.value
+)
+function alternarVista() {
+  vistaManual.value = !vistaManual.value
+}
 const area = ref(null)
 const arrastrando = ref(false)
 const subiendo = ref(false)
@@ -97,7 +107,7 @@ function alSoltar(evento) {
       type="button"
       :aria-pressed="vista"
       :title="vista ? 'Editar Markdown' : 'Previsualizar Markdown'"
-      @click="vista = !vista"
+      @click="alternarVista"
     >
       {{ vista ? '✎' : 'M↓' }}
     </button>
