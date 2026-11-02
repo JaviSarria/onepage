@@ -120,6 +120,43 @@ Enforce Screaming & Clean Architecture. The dependency rule is absolute: **Inner
 
 ---
 
+## Makefile Standards
+
+Use a root `Makefile` as the single entry point for recurring development tasks in the repository.
+
+### 1. Conventions:
+- Every target must be declared `.PHONY` unless it maps to a real file.
+- Use lowercase names with hyphens or underscores consistently (e.g., `backend-test`, `db-migrate`).
+- Add `## description` help metadata to each target and a `help` target that aggregates them.
+
+### 2. Standard Targets:
+
+| Group | Target | Purpose |
+|---|---|---|
+| Setup | `install` | Install backend (uv) and frontend (npm/pnpm) dependencies |
+| Dev | `dev` | Run backend and frontend in dev/watch mode |
+| Quality | `lint` | Run all linters (Ruff, ESLint) |
+| Quality | `format` | Run all formatters (Ruff, Prettier) |
+| Quality | `typecheck` | Run all type checks (mypy/pyright, vue-tsc) |
+| Test | `test` | Run backend and frontend test suites |
+| Build | `build` | Build production artifacts |
+| Docker | `up`, `down`, `logs` | Compose orchestration shortcuts |
+| Database | `db-up`, `db-migrate`, `db-reset` | PostgreSQL lifecycle |
+
+### 3. Command Rules:
+- Delegate to the real tooling inside recipes; never reimplement commands (e.g., `uv run ruff check .`).
+- Centralize repeated values in variables (e.g., `BACKEND_DIR ?= backend`).
+- Keep recipes short; one logical action per target.
+
+### 4. Monorepo Targets:
+- Prefix backend/frontend concerns (`backend-lint`, `frontend-test`) to avoid name collisions.
+
+### 5. OS Handling:
+- On **Windows**, the most reliable approach is to delegate to a PowerShell script invoked from the Makefile (e.g., via `powershell -NoProfile -ExecutionPolicy Bypass -Command`), instead of shell recipes.
+- On **Linux/macOS**, keep all commands inline in the Makefile recipes.
+
+---
+
 ## Docker & Containerization Standards
 
 The project must run deterministically across all environments via Docker and Compose. Containers are production-parity representations; local development must mirror CI/Production constraints.
