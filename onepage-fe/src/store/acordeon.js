@@ -2,10 +2,6 @@ import { reactive, ref } from 'vue'
 
 // Estado global de apertura/cierre de las secciones (efecto acordeon).
 const abiertos = reactive(new Set())
-// Profundidad maxima visible en el indice derecho: 1 = solo secciones de
-// primer nivel (# Cabecera, # Requerimiento, # Analisis, ...); 2 o 3 anaden
-// subapartados; valores >= 99 devuelven a "todo".
-const profundidad = ref(1)
 const actual = ref('')
 
 export function domId(clave) {
@@ -55,12 +51,4 @@ export function claveActual() {
 
 export function setClaveActual(clave) {
   actual.value = clave
-}
-
-export function getProfundidad() {
-  return profundidad.value
-}
-
-export function setProfundidad(valor) {
-  profundidad.value = valor
 }

@@ -1,13 +1,12 @@
-# Modo fuelle en la tercera columna (índice de profundidad)
+# Navegación jerárquica en el índice de la tercera columna
 
 ## Objetivo
 
-En las páginas de evolutivos e incidencias, la tercera columna (índice
-«En esta página») debe ofrecer un modo de profundidad tipo fuelle: mostrar los
-niveles superiores (`# Cabecera`, `# Requerimiento`, `# Análisis`, ...) y ocultar
-lo de más. Además, cuando la columna principal está en un campo concreto, la
-tercera columna debe mostrar toda la profundidad de apartados y subapartados
-donde se encuentra ese campo.
+En las páginas de evolutivos e incidencias, el índice «En esta página» muestra
+inicialmente solo las secciones de nivel superior. Los nodos con hijos ofrecen
+un control accesible para expandirlos o contraerlos, separado del título, que
+sigue navegando a la ubicación. Al enfocar un campo en el documento, el índice
+revela la ruta jerárquica de sus ancestros.
 
 ## Contexto
 
@@ -20,19 +19,22 @@ donde se encuentra ese campo.
 
 ## Alcance
 
-- [x] Añadir profundidad máxima configurable al estado del acordeón.
-- [x] Filtrar el índice por profundidad, ocultando niveles más allá del máximo.
-- [x] Mostrar la ruta completa (todos los niveles) del campo actualmente enfocado.
-- [x] Control de profundidad en la tercera columna.
+- [x] Mostrar inicialmente solo los nodos raíz y expandir o contraer nodos con hijos.
+- [x] Mantener separado el control de expansión de la navegación del título.
+- [x] Expandir los ancestros del campo actualmente enfocado, incluidos nodos anidados.
+- [x] Reiniciar las expansiones manuales al seleccionar otro documento.
+- [x] Limpiar la clave de foco al cambiar de documento y conservar la ruta indicada por un resultado de búsqueda.
 - [x] Verificación (build frontend): `npm run build` en `onepage-fe` finalizó correctamente.
 
 ## Criterios de aceptación
 
-- Con profundidad por defecto (1) la tercera columna muestra `# Cabecera`,
-  `# Requerimiento`, `# Análisis`, ... y oculta subapartados y más.
+- La tercera columna muestra inicialmente las secciones raíz y oculta sus hijos.
+- Los nodos con hijos muestran `+`; al activarlo, muestran `−` y revelan sus hijos.
+- Los nodos hoja no tienen control de expansión; el título navega a su ubicación.
 - Al enfocar un campo concreto de la columna principal, la tercera columna
   muestra toda la ruta de apartados y subapartados que lo contiene.
-- El control de profundidad permite variar el número de niveles mostrados.
+- Al seleccionar otro documento, el índice vuelve a mostrar solo los nodos raíz.
+- Al abrir un resultado de búsqueda, el índice conserva la ruta de `saltarA` del resultado.
 - No se exponen credenciales ni secrets en el flujo.
 
 ## Estado
@@ -42,10 +44,11 @@ donde se encuentra ese campo.
 
 ## Corrección de seguimiento
 
-La primera implementación intentaba deducir el campo actual mediante el acordeón
-más profundo abierto, lo que no era fiable porque al cargar se abren varias
-secciones con contenido. Ahora la columna principal registra el foco y el índice
-mantiene la ruta de ancestros del acordeón que contiene el control enfocado.
-También se confirmó que Vite sirve los cambios actuales desde `127.0.0.1:5173`.
+La expansión requerida por el foco se determina por la clave registrada desde el
+campo enfocado, no por las secciones abiertas en el documento. La expansión
+manual se conserva separada de la navegación y se reinicia al cambiar la clave
+del documento del árbol. La clave de foco también se limpia al cambiar de
+documento, excepto cuando la selección procede de un resultado de búsqueda, que
+restablece explícitamente la clave de destino.
 
 Commit de la corrección: `8ba547b`.
