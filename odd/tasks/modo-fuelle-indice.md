@@ -47,3 +47,5 @@ más profundo abierto, lo que no era fiable porque al cargar se abren varias
 secciones con contenido. Ahora la columna principal registra el foco y el índice
 mantiene la ruta de ancestros del acordeón que contiene el control enfocado.
 También se confirmó que Vite sirve los cambios actuales desde `127.0.0.1:5173`.
+
+Commit de la corrección: `8ba547b`.
