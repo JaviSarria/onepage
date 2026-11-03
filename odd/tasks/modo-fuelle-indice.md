@@ -42,6 +42,13 @@ revela la ruta jerárquica de sus ancestros.
 - [x] Implementado
 - [x] Verificado
 
+## Evidencia de cierre
+
+- Commit de navegación jerárquica: `fe87c4d`.
+- `npm run build` en `onepage-fe`: correcto (exit code 0).
+- Verificación estructural independiente de los seis criterios: todos pasaron.
+- La revisión RDD nativa quedó no disponible para este runtime; no se inició una ruta alternativa.
+
 ## Corrección de seguimiento
 
 La expansión requerida por el foco se determina por la clave registrada desde el
