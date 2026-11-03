@@ -6,6 +6,8 @@ const abiertos = reactive(new Set())
 // primer nivel (# Cabecera, # Requerimiento, # Analisis, ...); 2 o 3 anaden
 // subapartados; valores >= 99 devuelven a "todo".
 const profundidad = ref(1)
+// Tema activo ('light' | 'dark'), sincronizado con document.documentElement.
+const tema = ref('light')
 
 export function domId(clave) {
   return 'sec-' + clave.replace(/[^a-zA-Z0-9_-]+/g, '-')
@@ -68,4 +70,12 @@ export function getProfundidad() {
 
 export function setProfundidad(valor) {
   profundidad.value = valor
+}
+
+export function getTema() {
+  return tema.value
+}
+
+export function setTema(valor) {
+  tema.value = valor
 }

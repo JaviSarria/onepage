@@ -6,3 +6,8 @@ onepage-fe/dist/
 __pycache__/
 *.pyc
 *.sqlite3
+**/data/*
+**/data/**
+**/dist/*
+**/dist/**
+opencode-*/
