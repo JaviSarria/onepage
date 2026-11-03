@@ -1,15 +1,34 @@
 <script setup>
-import { estaAbierto, irA } from '../store/acordeon.js'
+import { computed } from 'vue'
+import { estaAbierto, irA, claveActual, getProfundidad } from '../store/acordeon.js'
 
-defineProps({
+const props = defineProps({
   nodos: { type: Array, default: () => [] },
   nivel: { type: Number, default: 1 }
 })
+
+// Modo fuelle: se muestran como mucho `profundidadMaxima` niveles del indice.
+// Siempre se conserva la ruta completa del campo actual (claveActual), que puede
+// estar mas alla del limite configurado.
+function filtrar(nodos, nivel) {
+  const limite = getProfundidad()
+  const actual = claveActual()
+  const visibles = []
+  for (const nodo of nodos) {
+    const esRutaDelActual = Boolean(actual) && (nodo.clave === actual || nodo.clave.startsWith(actual + '/'))
+    const seMuestra = nivel <= limite || esRutaDelActual
+    if (!seMuestra) continue
+    visibles.push({ ...nodo, hijos: filtrar(nodo.hijos || [], nivel + 1) })
+  }
+  return visibles
+}
+
+const nodosVisibles = computed(() => filtrar(props.nodos, props.nivel))
 </script>
 
 <template>
   <ul :role="nivel === 1 ? 'tree' : 'group'" class="indice">
-    <li v-for="n in nodos" :key="n.clave" role="treeitem" :aria-expanded="estaAbierto(n.clave)">
+    <li v-for="n in nodosVisibles" :key="n.clave" role="treeitem" :aria-expanded="estaAbierto(n.clave)">
       <button
         type="button"
         class="enlace"

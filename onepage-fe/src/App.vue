@@ -1,6 +1,7 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { api } from './api.js'
+import { getProfundidad, setProfundidad } from './store/acordeon.js'
 import ArbolContenido from './components/ArbolContenido.vue'
 import ArbolProyectos from './components/ArbolProyectos.vue'
 import BusquedaVista from './components/BusquedaVista.vue'
@@ -55,6 +56,21 @@ const proyectoSeleccionado = computed(() =>
     ? arbol.value.find((p) => p.id === seleccion.value.id)
     : null
 )
+
+// Profundidad del indice derecho (tercera columna): 1 = solo secciones superiores.
+const profundidad = computed(() => getProfundidad())
+const profundidadSeleccion = ref(String(profundidad.value))
+
+watch(
+  () => getProfundidad(),
+  (valor) => {
+    profundidadSeleccion.value = String(valor)
+  }
+)
+
+function cambiarProfundidad() {
+  setProfundidad(Number(profundidadSeleccion.value))
+}
 
 async function cargarArbol() {
   try {
@@ -232,6 +248,15 @@ async function documentoCambiado(info) {
       </template>
       <template v-else>
         <h2>En esta página</h2>
+        <div class="control-profundidad">
+          <label for="profundidad-indice">Profundidad</label>
+          <select id="profundidad-indice" class="selector-profundidad" v-model="profundidadSeleccion">
+            <option value="1">Solo secciones</option>
+            <option value="2">Subsecciones</option>
+            <option value="3">Subsubsecciones</option>
+            <option value="99">Todo</option>
+          </select>
+        </div>
         <ArbolContenido v-if="indice.length" :nodos="indice" />
         <p v-else class="vacio">Sin contenido</p>
       </template>
@@ -289,6 +314,23 @@ async function documentoCambiado(info) {
   letter-spacing: 0.04em;
   color: var(--fg-muted);
   margin: 0 0 8px;
+}
+
+.control-profundidad {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.control-profundidad label {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.selector-profundidad {
+  font-size: 12px;
+  padding: 3px 6px;
 }
 
 .panel-ayuda-busqueda {
