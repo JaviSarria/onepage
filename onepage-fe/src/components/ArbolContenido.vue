@@ -15,7 +15,7 @@ function filtrar(nodos, nivel) {
   const actual = claveActual()
   const visibles = []
   for (const nodo of nodos) {
-    const esRutaDelActual = Boolean(actual) && (nodo.clave === actual || nodo.clave.startsWith(actual + '/'))
+    const esRutaDelActual = Boolean(actual) && (nodo.clave === actual || actual.startsWith(nodo.clave + '/'))
     const seMuestra = nivel <= limite || esRutaDelActual
     if (!seMuestra) continue
     visibles.push({ ...nodo, hijos: filtrar(nodo.hijos || [], nivel + 1) })

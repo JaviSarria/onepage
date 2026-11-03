@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { api } from './api.js'
-import { getProfundidad, setProfundidad } from './store/acordeon.js'
+import { getProfundidad, setClaveActual, setProfundidad } from './store/acordeon.js'
 import ArbolContenido from './components/ArbolContenido.vue'
 import ArbolProyectos from './components/ArbolProyectos.vue'
 import BusquedaVista from './components/BusquedaVista.vue'
@@ -70,6 +70,11 @@ watch(
 
 function cambiarProfundidad() {
   setProfundidad(Number(profundidadSeleccion.value))
+}
+
+function registrarCampoActual(evento) {
+  const seccion = evento.target.closest('.acordeon[data-clave]')
+  if (seccion) setClaveActual(seccion.dataset.clave)
 }
 
 async function cargarArbol() {
@@ -179,7 +184,7 @@ async function documentoCambiado(info) {
 
     <div class="divisor" @mousedown="iniciarRedimension('izquierda')"></div>
 
-    <main class="centro">
+    <main class="centro" @focusin="registrarCampoActual">
       <p v-if="error" class="error">{{ error }}</p>
 
       <!-- Zona de búsqueda y resultados -->

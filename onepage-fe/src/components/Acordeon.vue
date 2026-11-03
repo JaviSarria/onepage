@@ -23,6 +23,7 @@ const estiloColor = computed(() =>
     :class="{ coloreado: color }"
     :style="estiloColor"
     :id="domId(clave)"
+    :data-clave="clave"
     :data-nivel="nivel"
   >
     <component :is="etiqueta" class="cabecera">
@@ -112,6 +113,11 @@ const estiloColor = computed(() =>
   border-left: 4px solid var(--sec-borde);
   border-radius: 6px;
   padding: 4px 8px;
+}
+
+:global(:root[data-theme='dark']) .acordeon.coloreado > .cabecera {
+  background: var(--bg-soft);
+  color: var(--fg);
 }
 
 .acordeon.coloreado > .panel {

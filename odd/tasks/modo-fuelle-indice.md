@@ -20,22 +20,30 @@ donde se encuentra ese campo.
 
 ## Alcance
 
-- [ ] Añadir profundidad máxima configurable al estado del acordeón.
-- [ ] Filtrar el índice por profundidad, ocultando niveles más allá del máximo.
-- [ ] Mostrar la ruta completa (todos los niveles) del campo actual.
-- [ ] Control de profundidad en la tercera columna.
-- [ ] Verificación (build frontend) y cierre.
+- [x] Añadir profundidad máxima configurable al estado del acordeón.
+- [x] Filtrar el índice por profundidad, ocultando niveles más allá del máximo.
+- [x] Mostrar la ruta completa (todos los niveles) del campo actualmente enfocado.
+- [x] Control de profundidad en la tercera columna.
+- [x] Verificación (build frontend): `npm run build` en `onepage-fe` finalizó correctamente.
 
 ## Criterios de aceptación
 
 - Con profundidad por defecto (1) la tercera columna muestra `# Cabecera`,
   `# Requerimiento`, `# Análisis`, ... y oculta subapartados y más.
-- Al estar en un campo concreto de la columna principal, la tercera columna
-  muestra toda la profundidad de apartados y subapartados hasta ese campo.
+- Al enfocar un campo concreto de la columna principal, la tercera columna
+  muestra toda la ruta de apartados y subapartados que lo contiene.
 - El control de profundidad permite variar el número de niveles mostrados.
 - No se exponen credenciales ni secrets en el flujo.
 
 ## Estado
 
-- [ ] Implementado
-- [ ] Verificado
+- [x] Implementado
+- [x] Verificado
+
+## Corrección de seguimiento
+
+La primera implementación intentaba deducir el campo actual mediante el acordeón
+más profundo abierto, lo que no era fiable porque al cargar se abren varias
+secciones con contenido. Ahora la columna principal registra el foco y el índice
+mantiene la ruta de ancestros del acordeón que contiene el control enfocado.
+También se confirmó que Vite sirve los cambios actuales desde `127.0.0.1:5173`.

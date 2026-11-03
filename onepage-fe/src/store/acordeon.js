@@ -6,8 +6,7 @@ const abiertos = reactive(new Set())
 // primer nivel (# Cabecera, # Requerimiento, # Analisis, ...); 2 o 3 anaden
 // subapartados; valores >= 99 devuelven a "todo".
 const profundidad = ref(1)
-// Tema activo ('light' | 'dark'), sincronizado con document.documentElement.
-const tema = ref('light')
+const actual = ref('')
 
 export function domId(clave) {
   return 'sec-' + clave.replace(/[^a-zA-Z0-9_-]+/g, '-')
@@ -49,19 +48,13 @@ export function irA(clave) {
   })
 }
 
-// Clave (ruta) de la seccion o campo en foco: la mas profunda abierta hoy.
+// Clave de la seccion que contiene el control enfocado en el documento.
 export function claveActual() {
-  let maxima = ''
-  let maximaProfundidad = 0
-  for (const clave of abiertos) {
-    const prof = clave ? clave.split('/').length : 0
-    const esMasProfunda = prof > maximaProfundidad || (prof === maximaProfundidad && clave.length > maxima.length)
-    if (esMasProfunda) {
-      maxima = clave
-      maximaProfundidad = prof
-    }
-  }
-  return maxima
+  return actual.value
+}
+
+export function setClaveActual(clave) {
+  actual.value = clave
 }
 
 export function getProfundidad() {
@@ -70,12 +63,4 @@ export function getProfundidad() {
 
 export function setProfundidad(valor) {
   profundidad.value = valor
-}
-
-export function getTema() {
-  return tema.value
-}
-
-export function setTema(valor) {
-  tema.value = valor
 }
