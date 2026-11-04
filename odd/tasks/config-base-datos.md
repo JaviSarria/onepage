@@ -59,3 +59,10 @@ backend. Por ahora la página solo expone el apartado de base de datos.
   toggle de tema (`🌙`/`☀️`).
 - `App.vue` gestiona la vista de configuración mediante el tipo
   `configuracion` de la selección.
+
+## Corrección de seguimiento
+
+- Al abrir la vista de configuración, la rama condicional de búsqueda seguía con
+  `v-if` y la de documento con `v-else-if`, montando de más la vista de documento
+  (`GET /configuracion/undefined/full -> 404`). Se unificó la cadena con
+  `v-else-if` en busqueda. Commit: `413d89b`.
