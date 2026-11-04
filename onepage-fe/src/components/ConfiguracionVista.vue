@@ -10,6 +10,8 @@ const error = ref('')
 const archivo = ref(null)
 const baseSeleccionada = ref('')
 const notificacion = ref('')
+const archivosAssets = ref([])
+const archivoTodo = ref(null)
 
 async function cargar() {
   cargando.value = true
@@ -31,6 +33,36 @@ async function exportar() {
   notificacion.value = `Exportación completada. Archivo creado: ${nombre}. Contenido: ${bases.value.map((b) => b.nombre).join(', ')}; carpeta assets incluida. Los ficheros se descargaron a la carpeta de descargas del navegador.`
 }
 
+async function importarAssets() {
+  notificacion.value = ''
+  if (!archivosAssets.value.length) return
+  error.value = ''
+  const ok = []
+  for (const f of archivosAssets.value) {
+    try {
+      const r = await api.sistemaImportarAsset(f)
+      ok.push(r?.destino || f.name)
+    } catch (e) {
+      error.value = e.message
+      notificacion.value = `Fallo la importación de assets: ${e.message}`
+      return
+    }
+  }
+  notificacion.value = `Importación de assets completada. Ficheros subidos: ${ok.length}.`
+}
+
+async function importarTodo() {
+  if (!archivoTodo.value) return
+  notificacion.value = ''
+  error.value = ''
+  try {
+    const r = await api.sistemaImportarTodo(archivoTodo.value)
+    notificacion.value = `Importación completa completada. OK: ${r?.ok}`
+  } catch (e) {
+    notificacion.value = `Fallo la importación completa: ${e.message}`
+  }
+}
+
 async function restaurar() {
   const base = bases.value.find((b) => b.nombre === baseSeleccionada.value) || bases.value[0]
   if (!base || !archivo.value) return
@@ -49,14 +81,24 @@ onMounted(cargar)
       <button type="button" class="boton" @click="emit('cerrar')">← Volver</button>
     </header>
 
-    <h3>Base de datos</h3>
+    <h3>Datos</h3>
     <p v-if="error" class="error">{{ error }}</p>
     <ul v-else-if="!cargando" class="lista-bases">
       <li v-for="base in bases" :key="base.nombre">{{ base.nombre }}</li>
     </ul>
 
     <div class="acciones">
-      <button type="button" :disabled="cargando" @click="exportar">Exportar bases de datos</button>
+      <button type="button" :disabled="cargando" @click="exportar">Exportar datos</button>
+    </div>
+
+    <div class="acciones">
+      <input type="file" multiple @change="archivosAssets = Array.from($event.target.files || [])" />
+      <button type="button" :disabled="!archivosAssets.length" @click="importarAssets">Importar assets</button>
+    </div>
+
+    <div class="acciones">
+      <input type="file" accept=".zip" @change="archivoTodo = $event.target.files?.[0]" />
+      <button type="button" :disabled="!archivoTodo" @click="importarTodo">Importar todo</button>
     </div>
 
     <div v-if="bases.length" class="acciones">

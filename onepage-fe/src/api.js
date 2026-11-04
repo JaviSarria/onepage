@@ -91,5 +91,19 @@ export const api = {
     })
     if (!res.ok) throw new Error(`No se pudo importar la base ${nombre}: ${await res.text()}`)
     return res.json()
+  },
+  async sistemaImportarAsset(archivo) {
+    const form = new FormData()
+    form.append('archivo', archivo)
+    const res = await fetch(`${BASE}/sistema/assets`, { method: 'POST', body: form })
+    if (!res.ok) throw new Error(`No se pudo importar el asset: ${await res.text()}`)
+    return res.json()
+  },
+  async sistemaImportarTodo(archivo) {
+    const form = new FormData()
+    form.append('archivo', archivo)
+    const res = await fetch(`${BASE}/sistema/importar`, { method: 'POST', body: form })
+    if (!res.ok) throw new Error(`No se pudo importar el backup: ${await res.text()}`)
+    return res.json()
   }
 }
