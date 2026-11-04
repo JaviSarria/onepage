@@ -11,3 +11,12 @@ __pycache__/
 **/dist/*
 **/dist/**
 opencode-*/
+.codegraph/
+AGENTS.md
+opencode.json
+.gentle-ai-*
+odd/
+.atl/
+.gentle-ai-*
+.idea/
+.vscode/
