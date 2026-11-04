@@ -5,7 +5,7 @@ const props = defineProps({
   nodos: { type: Array, default: () => [] },
   seleccion: { type: Object, default: null }
 })
-const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'borrar-proyecto', 'diario', 'buscar'])
+const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'borrar-proyecto', 'diario', 'buscar', 'configuracion'])
 
 const abiertos = ref(new Set())
 const filtro = ref('')
@@ -132,6 +132,15 @@ function activo(tipo, id) {
       <li v-if="!proyectosVisibles().length" class="vacio">No hay proyectos</li>
     </ul>
     <footer class="pie-arbol">
+      <button
+        type="button"
+        class="boton-config"
+        title="Configuración"
+        aria-label="Configuración"
+        @click="emit('configuracion')"
+      >
+        ⚙️
+      </button>
       <button type="button" class="boton-tema" @click="alternarTema">
         {{ tema === 'light' ? '🌙' : '☀️' }}
       </button>
@@ -286,9 +295,19 @@ ul[role='tree'] {
 .pie-arbol {
   margin-top: auto;
   padding: 8px 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .boton-tema {
   width: auto;
+}
+
+.boton-config {
+  padding: 2px 6px;
+  font-size: 16px;
+  line-height: 1.2;
 }
 </style>

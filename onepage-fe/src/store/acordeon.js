@@ -1,7 +1,8 @@
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 // Estado global de apertura/cierre de las secciones (efecto acordeon).
 const abiertos = reactive(new Set())
+const actual = ref('')
 
 export function domId(clave) {
   return 'sec-' + clave.replace(/[^a-zA-Z0-9_-]+/g, '-')
@@ -41,4 +42,13 @@ export function irA(clave) {
       setTimeout(() => el.classList.remove('destacado-temporal'), 2600)
     }
   })
+}
+
+// Clave de la seccion que contiene el control enfocado en el documento.
+export function claveActual() {
+  return actual.value
+}
+
+export function setClaveActual(clave) {
+  actual.value = clave
 }

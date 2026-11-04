@@ -21,6 +21,10 @@ const doc = ref(null)
 const cargando = ref(false)
 const esquema = computed(() => ESQUEMAS[props.tipo])
 const indice = computed(() => (doc.value ? construirIndice(esquema.value, doc.value) : []))
+const tituloImpresion = computed(() => {
+  const prefijo = doc.value?.codigo ? `${doc.value.codigo} - ` : ''
+  return `${prefijo}${doc.value?.titulo || 'Documento'}`
+})
 
 async function recargar() {
   cargando.value = true
@@ -161,6 +165,7 @@ async function borrarDocumento() {
   <article v-if="doc" class="md documento">
     <div class="cabecera-impresion">
       <span class="logo-impresion">OnePage · {{ esquema.etiqueta }}</span>
+      <span class="titulo-impresion">{{ tituloImpresion }}</span>
       <span class="fecha-impresion">Exportado el {{ fechaImpresion }}</span>
     </div>
     <div v-if="terminoBusqueda" class="banner-busqueda">
@@ -188,6 +193,15 @@ async function borrarDocumento() {
       <span v-if="doc.codigo" class="etiqueta-estado">{{ doc.codigo }}</span>
     </p>
     <hr class="separador" />
+
+    <nav v-if="esquema.secciones?.length" class="indice-impresion">
+      <h2 class="indice-titulo">Índice</h2>
+      <ol class="indice-lista">
+        <li v-for="seccion in esquema.secciones" :key="seccion.id">
+          <a :href="`#sec-doc-${seccion.id.replace(/[^a-zA-Z0-9_-]+/g, '-')}`">{{ seccion.titulo }}</a>
+        </li>
+      </ol>
+    </nav>
 
     <Acordeon clave="doc/cabecera" titulo="Cabecera" :nivel="2" :color="COLORES_SECCION.cabecera">
       <dl class="ficha">
@@ -302,6 +316,10 @@ async function borrarDocumento() {
 }
 
 .cabecera-impresion {
+  display: none;
+}
+
+.indice-impresion {
   display: none;
 }
 </style>

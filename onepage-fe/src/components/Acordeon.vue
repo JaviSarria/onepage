@@ -23,6 +23,7 @@ const estiloColor = computed(() =>
     :class="{ coloreado: color }"
     :style="estiloColor"
     :id="domId(clave)"
+    :data-clave="clave"
     :data-nivel="nivel"
   >
     <component :is="etiqueta" class="cabecera">

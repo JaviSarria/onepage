@@ -4,6 +4,8 @@ Aplicación para la gestión de proyectos pequeños y personales, con dos ámbit
 **evolutivos** e **incidencias**. Cada documento reproduce, campo a campo, las plantillas
 markdown de la carpeta [docs](docs), pero almacenadas y editables en una única página web.
 
+> 🌐 **Languages**: Español (esta versión) · [English](README.en.md)
+
 ---
 
 ## Índice
@@ -69,6 +71,7 @@ onepage/
 │       ├── models/          Modelo ORM (mixins comunes + un módulo por BBDD)
 │       ├── schemas.py       Generación automática de esquemas Pydantic
 │       ├── crud.py          Operaciones CRUD genéricas
+│       ├── sistema.py       Exportación / importación de bases
 │       ├── routers/         Fábrica de routers + routers concretos
 │       └── main.py          Aplicación FastAPI
 └── onepage-fe/       Frontend: Vue 3 + Vite
@@ -219,6 +222,17 @@ Variables opcionales: `make start BE_PORT=8100 FE_PORT=5200`.
 Al seleccionar el nodo del proyecto se muestra su ficha, el listado de evolutivos e incidencias
 y un resumen del número de documentos por estado.
 
+### Configuración y bases de datos
+
+El icono `⚙️` del panel izquierdo, junto al selector de tema, abre la vista de
+**Configuración**, que por ahora concentra el apartado de **bases de datos**:
+
+- **Exportar bases de datos**: descarga todas las bases disponibles del backend.
+- **Importar**: elige la base (selector) y sube el fichero `.sqlite3` para restaurarla.
+
+Tras una exportación, la vista muestra una notificación con el resultado y la ubicación de los
+ficheros descargados.
+
 ---
 
 ## Manual de desarrollador
@@ -274,6 +288,9 @@ Prefijo común: `/api`.
 | Método y ruta | Descripción |
 | --- | --- |
 | `GET /salud` | Comprobación de vida |
+| `GET /sistema/bases` | Lista de bases de datos disponibles |
+| `GET /sistema/bases/{nombre}/descargar` | Descarga de una base SQLite |
+| `POST /sistema/bases/{nombre}/importar` | Importación / restauración de una base |
 | `GET /buscar` | Búsqueda global de texto en proyectos, documentos y subcolecciones (`?q=&tipo=&limite=`) |
 | `GET /arbol` | Proyectos con sus evolutivos e incidencias (árbol izquierdo) |
 | `GET/POST /proyectos` | Listado y alta (replicado en ambas bases) |

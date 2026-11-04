@@ -1,9 +1,11 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { api } from './api.js'
+import { setClaveActual } from './store/acordeon.js'
 import ArbolContenido from './components/ArbolContenido.vue'
 import ArbolProyectos from './components/ArbolProyectos.vue'
 import BusquedaVista from './components/BusquedaVista.vue'
+import ConfiguracionVista from './components/ConfiguracionVista.vue'
 import DiarioSeguimiento from './components/DiarioSeguimiento.vue'
 import DocumentoVista from './components/DocumentoVista.vue'
 import ProyectoVista from './components/ProyectoVista.vue'
@@ -56,6 +58,11 @@ const proyectoSeleccionado = computed(() =>
     : null
 )
 
+function registrarCampoActual(evento) {
+  const seccion = evento.target.closest('.acordeon[data-clave]')
+  if (seccion) setClaveActual(seccion.dataset.clave)
+}
+
 async function cargarArbol() {
   try {
     arbol.value = await api.arbol()
@@ -85,6 +92,7 @@ onUnmounted(() => {
 
 function seleccionar(sel) {
   indice.value = []
+  setClaveActual('')
   if (sel?.tipo !== 'busqueda') {
     saltarA.value = ''
   }
@@ -111,10 +119,23 @@ function cerrarBusqueda() {
   }
 }
 
+function abrirConfiguracion() {
+  ultimaSeleccion.value = seleccion.value
+  indice.value = []
+  setClaveActual('')
+  seleccion.value = { tipo: 'configuracion' }
+}
+
+function cerrarConfiguracion() {
+  seleccion.value = ultimaSeleccion.value
+  ultimaSeleccion.value = null
+}
+
 function abrirDesdeBusqueda(datos) {
-  saltarA.value = datos.saltarA || ''
   terminoBusquedaActivo.value = datos.termino || consultaBusqueda.value
   seleccionar({ tipo: datos.tipo, id: datos.id, proyecto: datos.proyecto })
+  saltarA.value = datos.saltarA || ''
+  setClaveActual(saltarA.value)
 }
 
 async function nuevoProyecto() {
@@ -158,17 +179,24 @@ async function documentoCambiado(info) {
         @borrar-proyecto="borrarProyecto"
         @diario="seleccionar(null)"
         @buscar="abrirBusqueda($event || '')"
+        @configuracion="abrirConfiguracion"
       />
     </aside>
 
     <div class="divisor" @mousedown="iniciarRedimension('izquierda')"></div>
 
-    <main class="centro">
+    <main class="centro" @focusin="registrarCampoActual">
       <p v-if="error" class="error">{{ error }}</p>
+
+      <!-- Vista de configuración (base de datos) -->
+      <ConfiguracionVista
+        v-if="seleccion && seleccion.tipo === 'configuracion'"
+        @cerrar="cerrarConfiguracion"
+      />
 
       <!-- Zona de búsqueda y resultados -->
       <BusquedaVista
-        v-if="seleccion && seleccion.tipo === 'busqueda'"
+        v-else-if="seleccion && seleccion.tipo === 'busqueda'"
         :consulta-inicial="seleccion.consulta || consultaBusqueda"
         @abrir="abrirDesdeBusqueda"
         @cerrar="cerrarBusqueda"
@@ -232,7 +260,11 @@ async function documentoCambiado(info) {
       </template>
       <template v-else>
         <h2>En esta página</h2>
-        <ArbolContenido v-if="indice.length" :nodos="indice" />
+        <ArbolContenido
+          v-if="indice.length"
+          :key="seleccion?.tipo + seleccion?.id"
+          :nodos="indice"
+        />
         <p v-else class="vacio">Sin contenido</p>
       </template>
     </aside>

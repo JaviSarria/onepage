@@ -34,6 +34,12 @@
   color: #fff8c5;
 }
 
+/* Títulos de seccion coloreados en modo oscuro: fondo oscuro, texto legible. */
+:root[data-theme='dark'] .acordeon.coloreado > .cabecera {
+  background: var(--bg-soft);
+  color: var(--fg);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -294,13 +300,17 @@ mark.resaltado {
     break-after: avoid;
   }
 
-  .acordeon .disparador {
+  /* En PDF el titulo de la seccion vive dentro del boton (.disparador);
+     hay que mostrarlo porque la interfaz interactiva oculta los botones. */
+  .acordeon .cabecera .disparador {
+    display: flex !important;
     border: none !important;
     background: transparent !important;
     padding: 0 !important;
     cursor: default !important;
     font-size: 15px !important;
     font-weight: 600 !important;
+    color: inherit !important;
   }
 
   .acordeon .panel {
@@ -308,10 +318,39 @@ mark.resaltado {
     padding: 0 !important;
   }
 
+  /* Secciones principales del documento: cada una inicia en una pagina nueva. */
+  .documento > section.acordeon {
+    page-break-before: page;
+    break-before: page;
+  }
+
+  /* Titulo de seccion principal: letra mas grande, centrado, con color de seccion. */
+  .documento > section.acordeon > .cabecera {
+    background: var(--sec-fondo) !important;
+    border: 1px solid var(--sec-borde) !important;
+    text-align: center;
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .documento > section.acordeon > .cabecera .disparador {
+    justify-content: center !important;
+    font-size: 16px !important;
+  }
+
   /* Control de saltos de pagina */
   h1, h2, h3, h4, h5, .acordeon .cabecera {
     page-break-after: avoid;
     break-after: avoid;
+  }
+
+  /* Espaciado superior de titulos (dos lineas) respecto al contenido anterior. */
+  h1, h2, h3, h4, h5 {
+    margin-top: 44px !important;
+  }
+
+  h1 {
+    margin-top: 0 !important;
   }
 
   table, tr, td, th {
@@ -353,6 +392,36 @@ mark.resaltado {
     page-break-inside: avoid;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* Restablecer decoraciones heredadas (p.ej. tachado) en bloques de codigo. */
+  pre,
+  pre code,
+  .md pre,
+  .md code {
+    text-decoration: none !important;
+  }
+
+  /* Indice de secciones en PDF */
+  .indice-impresion {
+    display: block !important;
+    margin: 0 0 24px !important;
+  }
+
+  .indice-impresion .indice-titulo {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #59636e !important;
+    margin: 0 0 6px !important;
+  }
+
+  .indice-impresion .indice-lista {
+    margin: 0 0 16px !important;
+    padding-left: 18px !important;
+    font-size: 12px !important;
+    color: #59636e !important;
   }
 
   /* Tablas en PDF */

@@ -8,13 +8,13 @@
 | **Prioridad**      | {`Baja`; `Media`; `Alta`}                                                                     |
 | **Versión**        | {#.#}                                                                                         |
 | **Fecha objetivo** | {dd/MM/yyyy}                                                                                  |
-| **Commits**        | {id-bitbucket-01, ...}                                                                        |
-| **Despliegues**    | {id-bamboo-01, ...}                                                                           |
+| **Commits**        | {id-serv_repo-01, ...}                                                                        |
+| **Despliegues**    | {id-serv_deploy-01, ...}                                                                           |
 | **Incidencias**    | {id-jira-01, ...}                                                                             |
 
 ***
 
-# SM300
+# Doc Diseño Funcional
 
 ***
 
@@ -52,7 +52,7 @@
 
 ## Requisitos
 
-> Indicar los puntos del SM300 en el que se basan los requisitos
+> Indicar los puntos del doc de diseño funcional en el que se basan los requisitos
 
 ### Grupo de requisito A
 
@@ -166,7 +166,7 @@
 | --------------- | ---------------------------------- |
 | **Ubicación**   | {Ruta_lógica_Paquete}              |
 | **Descripción** | {Descripción del cambio}           |
-| **Commit**      | {id_bitbucket}                     |
+| **Commit**      | {id_serv_repo}                     |
 
 ***
 
@@ -222,8 +222,8 @@
 | **Entorno**                       | {`DEV`; `QA`; `PROD`}  |
 | **Fecha-hora**                    | {dd/MM/yyyy HH:mm}     |
 | **Responsable**                   | {nombre}               |
-| **Commits**                       | {Id_bitbucket-01, ...} |
-| **URL Pipeline Bamboo**           | {pipeline_despliegue}  |
+| **Commits**                       | {Id_repo-01, ...} |
+| **URL Pipeline serv despliegue**  | {pipeline_despliegue}  |
 | **Validación post-despliegue**    | {acciones}             |
 | **Resultado**                     | {texto}                |
 | **Plan de reversión / No aplica** | {plan}                 |
