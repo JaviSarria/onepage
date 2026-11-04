@@ -196,7 +196,7 @@ async function documentoCambiado(info) {
 
       <!-- Zona de búsqueda y resultados -->
       <BusquedaVista
-        v-if="seleccion && seleccion.tipo === 'busqueda'"
+        v-else-if="seleccion && seleccion.tipo === 'busqueda'"
         :consulta-inicial="seleccion.consulta || consultaBusqueda"
         @abrir="abrirDesdeBusqueda"
         @cerrar="cerrarBusqueda"
