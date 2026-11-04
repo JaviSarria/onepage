@@ -5,6 +5,7 @@ import { setClaveActual } from './store/acordeon.js'
 import ArbolContenido from './components/ArbolContenido.vue'
 import ArbolProyectos from './components/ArbolProyectos.vue'
 import BusquedaVista from './components/BusquedaVista.vue'
+import ConfiguracionVista from './components/ConfiguracionVista.vue'
 import DiarioSeguimiento from './components/DiarioSeguimiento.vue'
 import DocumentoVista from './components/DocumentoVista.vue'
 import ProyectoVista from './components/ProyectoVista.vue'
@@ -118,6 +119,18 @@ function cerrarBusqueda() {
   }
 }
 
+function abrirConfiguracion() {
+  ultimaSeleccion.value = seleccion.value
+  indice.value = []
+  setClaveActual('')
+  seleccion.value = { tipo: 'configuracion' }
+}
+
+function cerrarConfiguracion() {
+  seleccion.value = ultimaSeleccion.value
+  ultimaSeleccion.value = null
+}
+
 function abrirDesdeBusqueda(datos) {
   terminoBusquedaActivo.value = datos.termino || consultaBusqueda.value
   seleccionar({ tipo: datos.tipo, id: datos.id, proyecto: datos.proyecto })
@@ -166,6 +179,7 @@ async function documentoCambiado(info) {
         @borrar-proyecto="borrarProyecto"
         @diario="seleccionar(null)"
         @buscar="abrirBusqueda($event || '')"
+        @configuracion="abrirConfiguracion"
       />
     </aside>
 
@@ -173,6 +187,12 @@ async function documentoCambiado(info) {
 
     <main class="centro" @focusin="registrarCampoActual">
       <p v-if="error" class="error">{{ error }}</p>
+
+      <!-- Vista de configuración (base de datos) -->
+      <ConfiguracionVista
+        v-if="seleccion && seleccion.tipo === 'configuracion'"
+        @cerrar="cerrarConfiguracion"
+      />
 
       <!-- Zona de búsqueda y resultados -->
       <BusquedaVista

@@ -50,5 +50,30 @@ export const api = {
     if (!res.ok) throw new Error(`No se pudo subir la imagen: ${await res.text()}`)
     const { nombre } = await res.json()
     return { nombre, url: `${BASE}/assets/${nombre}` }
+  },
+
+  sistemaBases: () => request('GET', '/sistema/bases'),
+  sistemaDescargar: async (nombre) => {
+    const res = await fetch(`${BASE}/sistema/bases/${encodeURIComponent(nombre)}/descargar`)
+    if (!res.ok) throw new Error(`No se pudo exportar la base ${nombre}: ${await res.text()}`)
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const enlace = document.createElement('a')
+    enlace.href = url
+    enlace.download = nombre
+    document.body.appendChild(enlace)
+    enlace.click()
+    enlace.remove()
+    URL.revokeObjectURL(url)
+  },
+  sistemaImportar: async (nombre, archivo) => {
+    const form = new FormData()
+    form.append('archivo', archivo)
+    const res = await fetch(`${BASE}/sistema/bases/${encodeURIComponent(nombre)}/importar`, {
+      method: 'POST',
+      body: form
+    })
+    if (!res.ok) throw new Error(`No se pudo importar la base ${nombre}: ${await res.text()}`)
+    return res.json()
   }
 }
