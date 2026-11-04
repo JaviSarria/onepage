@@ -293,12 +293,6 @@ mark.resaltado {
     break-inside: auto;
   }
 
-  /* Cada seccion del documento inicia en una pagina nueva (excepto la primera). */
-  .acordeon:not(:first-of-type) {
-    page-break-before: page;
-    break-before: page;
-  }
-
   .acordeon .cabecera {
     background: transparent !important;
     margin-bottom: 8px !important;
@@ -328,6 +322,15 @@ mark.resaltado {
   h1, h2, h3, h4, h5, .acordeon .cabecera {
     page-break-after: avoid;
     break-after: avoid;
+  }
+
+  /* Espaciado superior de titulos (dos lineas) respecto al contenido anterior. */
+  h1, h2, h3, h4, h5 {
+    margin-top: 44px !important;
+  }
+
+  h1 {
+    margin-top: 0 !important;
   }
 
   table, tr, td, th {
