@@ -34,6 +34,12 @@
   color: #fff8c5;
 }
 
+/* Títulos de seccion coloreados en modo oscuro: fondo oscuro, texto legible. */
+:root[data-theme='dark'] .acordeon.coloreado > .cabecera {
+  background: var(--bg-soft);
+  color: var(--fg);
+}
+
 * {
   box-sizing: border-box;
 }

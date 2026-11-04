@@ -115,11 +115,6 @@ const estiloColor = computed(() =>
   padding: 4px 8px;
 }
 
-:global(:root[data-theme='dark']) .acordeon.coloreado > .cabecera {
-  background: var(--bg-soft);
-  color: var(--fg);
-}
-
 .acordeon.coloreado > .panel {
   border-left: 2px solid var(--sec-borde);
 }
