@@ -293,6 +293,12 @@ mark.resaltado {
     break-inside: auto;
   }
 
+  /* Cada seccion del documento inicia en una pagina nueva (excepto la primera). */
+  .acordeon:not(:first-of-type) {
+    page-break-before: page;
+    break-before: page;
+  }
+
   .acordeon .cabecera {
     background: transparent !important;
     margin-bottom: 8px !important;
@@ -300,13 +306,17 @@ mark.resaltado {
     break-after: avoid;
   }
 
-  .acordeon .disparador {
+  /* En PDF el titulo de la seccion vive dentro del boton (.disparador);
+     hay que mostrarlo porque la interfaz interactiva oculta los botones. */
+  .acordeon .cabecera .disparador {
+    display: flex !important;
     border: none !important;
     background: transparent !important;
     padding: 0 !important;
     cursor: default !important;
     font-size: 15px !important;
     font-weight: 600 !important;
+    color: inherit !important;
   }
 
   .acordeon .panel {
@@ -359,6 +369,36 @@ mark.resaltado {
     page-break-inside: avoid;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* Restablecer decoraciones heredadas (p.ej. tachado) en bloques de codigo. */
+  pre,
+  pre code,
+  .md pre,
+  .md code {
+    text-decoration: none !important;
+  }
+
+  /* Indice de secciones en PDF */
+  .indice-impresion {
+    display: block !important;
+    margin: 0 0 24px !important;
+  }
+
+  .indice-impresion .indice-titulo {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #59636e !important;
+    margin: 0 0 6px !important;
+  }
+
+  .indice-impresion .indice-lista {
+    margin: 0 0 16px !important;
+    padding-left: 18px !important;
+    font-size: 12px !important;
+    color: #59636e !important;
   }
 
   /* Tablas en PDF */
