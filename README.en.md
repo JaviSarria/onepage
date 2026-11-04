@@ -224,8 +224,8 @@ summary of the number of documents per status are shown.
 The `⚙️` icon in the left panel, next to the theme selector, opens the **Settings** view, which for
 now contains the **database** section:
 
-- **Export databases**: downloads all databases available in the backend (`evolutivos.sqlite3`,
-  `incidencias.sqlite3`, ...).
+- **Export databases**: generates a file `export-YYYYMMDDhhmm.zip` with all the backend databases
+  (`*.sqlite3`) and the content of the `data/assets` folder.
 - **Import**: choose the database (selector) and upload the `.sqlite3` file to restore it.
 
 After exporting, the view shows a notification with the result and where the downloaded files were

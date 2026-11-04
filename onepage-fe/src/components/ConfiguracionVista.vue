@@ -27,10 +27,8 @@ async function cargar() {
 
 async function exportar() {
   notificacion.value = ''
-  for (const base of bases.value) {
-    await api.sistemaDescargar(base.nombre)
-  }
-  notificacion.value = `Exportación completada. Ficheros exportados: ${bases.value.map((b) => b.nombre).join(', ')}. Los ficheros se descargaron a la carpeta de descargas del navegador.`
+  const nombre = await api.sistemaExportar()
+  notificacion.value = `Exportación completada. Archivo creado: ${nombre}. Contenido: ${bases.value.map((b) => b.nombre).join(', ')}; carpeta assets incluida. Los ficheros se descargaron a la carpeta de descargas del navegador.`
 }
 
 async function restaurar() {

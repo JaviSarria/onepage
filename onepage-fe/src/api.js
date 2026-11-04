@@ -66,6 +66,22 @@ export const api = {
     enlace.remove()
     URL.revokeObjectURL(url)
   },
+  async sistemaExportar() {
+    const res = await fetch(`${BASE}/sistema/exportar`)
+    if (!res.ok) throw new Error(`No se pudo exportar: ${await res.text()}`)
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const enlace = document.createElement('a')
+    enlace.href = url
+    const disposicion = res.headers.get('content-disposition') || ''
+    const nombre = /filename="?([^"]+)"?/.exec(disposicion)?.[1] || `export-${Date.now()}.zip`
+    enlace.download = nombre
+    document.body.appendChild(enlace)
+    enlace.click()
+    enlace.remove()
+    URL.revokeObjectURL(url)
+    return nombre
+  },
   sistemaImportar: async (nombre, archivo) => {
     const form = new FormData()
     form.append('archivo', archivo)

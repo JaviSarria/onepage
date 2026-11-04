@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import io
+import zipfile
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 from ..config import DATA_DIR
 
@@ -30,6 +33,28 @@ def descargar_base(nombre: str) -> FileResponse:
     if not ruta.is_file():
         raise HTTPException(status_code=404, detail=f"Base de datos no encontrada: {nombre}")
     return FileResponse(ruta, media_type="application/octet-stream", filename=nombre)
+
+
+@router.get("/exportar")
+def exportar() -> StreamingResponse:
+    """Exporta todas las bases de datos y el contenido de data/assets en un unico zip."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as z:
+        for ruta in sorted(DATA_DIR.glob("*.sqlite3")):
+            if ruta.is_file():
+                z.write(ruta, ruta.name)
+        carpeta_assets = DATA_DIR / "assets"
+        if carpeta_assets.is_dir():
+            for ruta in sorted(carpeta_assets.rglob("*")):
+                if ruta.is_file():
+                    z.write(ruta, ruta.relative_to(DATA_DIR).as_posix())
+    buffer.seek(0)
+    nombre_zip = f"export-{datetime.now().strftime('%Y%m%d%H%M')}.zip"
+    return StreamingResponse(
+        content=iter([buffer.getvalue()]),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{nombre_zip}"'},
+    )
 
 
 @router.post("/bases/{nombre}/importar")

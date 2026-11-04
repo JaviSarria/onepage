@@ -227,7 +227,8 @@ y un resumen del número de documentos por estado.
 El icono `⚙️` del panel izquierdo, junto al selector de tema, abre la vista de
 **Configuración**, que por ahora concentra el apartado de **bases de datos**:
 
-- **Exportar bases de datos**: descarga todas las bases disponibles del backend.
+- **Exportar bases de datos**: genera un fichero `export-YYYYMMDDhhmm.zip` con todas las bases
+  disponibles del backend (`*.sqlite3`) y el contenido de la carpeta `data/assets`.
 - **Importar**: elige la base (selector) y sube el fichero `.sqlite3` para restaurarla.
 
 Tras una exportación, la vista muestra una notificación con el resultado y la ubicación de los
