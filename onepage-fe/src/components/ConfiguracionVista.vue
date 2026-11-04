@@ -7,11 +7,13 @@ const emit = defineEmits(['cerrar'])
 const bases = ref([])
 const cargando = ref(false)
 const error = ref('')
-const archivo = ref(null)
-const baseSeleccionada = ref('')
 const notificacion = ref('')
 const archivosAssets = ref([])
 const archivoTodo = ref(null)
+const modoImport = ref('evolutivos')
+const archivo = ref(null)
+
+const MAPA_IMPORT = { evolutivos: 'evolutivos.sqlite3', incidencias: 'incidencias.sqlite3' }
 
 async function cargar() {
   cargando.value = true
@@ -19,7 +21,6 @@ async function cargar() {
   notificacion.value = ''
   try {
     bases.value = await api.sistemaBases()
-    baseSeleccionada.value = bases.value[0]?.nombre || ''
   } catch (e) {
     error.value = e.message
   } finally {
@@ -31,6 +32,20 @@ async function exportar() {
   notificacion.value = ''
   const nombre = await api.sistemaExportar()
   notificacion.value = `Exportación completada. Archivo creado: ${nombre}. Contenido: ${bases.value.map((b) => b.nombre).join(', ')}; carpeta assets incluida. Los ficheros se descargaron a la carpeta de descargas del navegador.`
+}
+
+async function importarBase() {
+  if (!archivo.value) return
+  const nombre = MAPA_IMPORT[modoImport.value]
+  if (!nombre) return
+  notificacion.value = ''
+  error.value = ''
+  try {
+    const r = await api.sistemaImportar(nombre, archivo.value)
+    notificacion.value = `Importación de la base ${nombre} completada. OK: ${r?.ok}`
+  } catch (e) {
+    notificacion.value = `Fallo la importación de la base ${nombre}: ${e.message}`
+  }
 }
 
 async function importarAssets() {
@@ -63,14 +78,6 @@ async function importarTodo() {
   }
 }
 
-async function restaurar() {
-  const base = bases.value.find((b) => b.nombre === baseSeleccionada.value) || bases.value[0]
-  if (!base || !archivo.value) return
-  notificacion.value = ''
-  await api.sistemaImportar(base.nombre, archivo.value)
-  archivo.value = null
-}
-
 onMounted(cargar)
 </script>
 
@@ -92,21 +99,27 @@ onMounted(cargar)
     </div>
 
     <div class="acciones">
-      <input type="file" multiple @change="archivosAssets = Array.from($event.target.files || [])" />
-      <button type="button" :disabled="!archivosAssets.length" @click="importarAssets">Importar assets</button>
-    </div>
-
-    <div class="acciones">
-      <input type="file" accept=".zip" @change="archivoTodo = $event.target.files?.[0]" />
-      <button type="button" :disabled="!archivoTodo" @click="importarTodo">Importar todo</button>
-    </div>
-
-    <div v-if="bases.length" class="acciones">
-      <select v-model="baseSeleccionada">
-        <option v-for="base in bases" :key="base.nombre" :value="base.nombre">{{ base.nombre }}</option>
+      <select v-model="modoImport">
+        <option value="evolutivos">evolutivos</option>
+        <option value="incidencias">incidencias</option>
+        <option value="assets">assets</option>
+        <option value="todos">todos</option>
       </select>
-      <input type="file" accept=".sqlite3,application/octet-stream" @change="archivo = $event.target.files?.[0]" />
-      <button type="button" :disabled="!archivo" @click="restaurar">Importar</button>
+
+      <template v-if="modoImport === 'evolutivos' || modoImport === 'incidencias'">
+        <input type="file" accept=".sqlite3" @change="archivo = $event.target.files?.[0]" />
+        <button type="button" :disabled="!archivo" @click="importarBase">Importar</button>
+      </template>
+
+      <template v-else-if="modoImport === 'assets'">
+        <input type="file" multiple @change="archivosAssets = Array.from($event.target.files || [])" />
+        <button type="button" :disabled="!archivosAssets.length" @click="importarAssets">Importar assets</button>
+      </template>
+
+      <template v-else-if="modoImport === 'todos'">
+        <input type="file" accept=".zip" @change="archivoTodo = $event.target.files?.[0]" />
+        <button type="button" :disabled="!archivoTodo" @click="importarTodo">Importar todo</button>
+      </template>
     </div>
 
     <div v-if="notificacion" class="notificacion" role="status">{{ notificacion }}</div>

@@ -219,14 +219,15 @@ Optional variables: `make start BE_PORT=8100 FE_PORT=5200`.
 When selecting the project node, its file (ficha), the list of evolutivos and incidencias and a
 summary of the number of documents per status are shown.
 
-### Database configuration
+### Data configuration
 
-The `⚙️` icon in the left panel, next to the theme selector, opens the **Settings** view, which for
-now contains the **database** section:
+The `⚙️` icon in the left panel, next to the theme selector, opens the **Settings** view, which
+for now contains the **data** section:
 
-- **Export databases**: generates a file `export-YYYYMMDDhhmm.zip` with all the backend databases
+- **Export data**: generates a file `export-YYYYMMDDhhmm.zip` with all the backend databases
   (`*.sqlite3`) and the content of the `data/assets` folder.
-- **Import**: choose the database (selector) and upload the `.sqlite3` file to restore it.
+- **Import**: a combo with the options `evolutivos`, `incidencias`, `assets` and `todos`, depending
+  on the choice.
 
 After exporting, the view shows a notification with the result and where the downloaded files were
 saved.

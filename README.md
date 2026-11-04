@@ -222,14 +222,15 @@ Variables opcionales: `make start BE_PORT=8100 FE_PORT=5200`.
 Al seleccionar el nodo del proyecto se muestra su ficha, el listado de evolutivos e incidencias
 y un resumen del número de documentos por estado.
 
-### Configuración y bases de datos
+### Configuración y datos
 
 El icono `⚙️` del panel izquierdo, junto al selector de tema, abre la vista de
-**Configuración**, que por ahora concentra el apartado de **bases de datos**:
+**Configuración**, que por ahora concentra el apartado de **datos**:
 
-- **Exportar bases de datos**: genera un fichero `export-YYYYMMDDhhmm.zip` con todas las bases
+- **Exportar datos**: genera un fichero `export-YYYYMMDDhhmm.zip` con todas las bases
   disponibles del backend (`*.sqlite3`) y el contenido de la carpeta `data/assets`.
-- **Importar**: elige la base (selector) y sube el fichero `.sqlite3` para restaurarla.
+- **Importar**: un combo con las opciones `evolutivos`, `incidencias`, `assets` y `todos`, según
+  la elección.
 
 Tras una exportación, la vista muestra una notificación con el resultado y la ubicación de los
 ficheros descargados.
