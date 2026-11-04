@@ -9,10 +9,12 @@ const cargando = ref(false)
 const error = ref('')
 const archivo = ref(null)
 const baseSeleccionada = ref('')
+const notificacion = ref('')
 
 async function cargar() {
   cargando.value = true
   error.value = ''
+  notificacion.value = ''
   try {
     bases.value = await api.sistemaBases()
     baseSeleccionada.value = bases.value[0]?.nombre || ''
@@ -24,14 +26,17 @@ async function cargar() {
 }
 
 async function exportar() {
+  notificacion.value = ''
   for (const base of bases.value) {
     await api.sistemaDescargar(base.nombre)
   }
+  notificacion.value = `Exportación completada. Ficheros exportados: ${bases.value.map((b) => b.nombre).join(', ')}. Los ficheros se descargaron a la carpeta de descargas del navegador.`
 }
 
 async function restaurar() {
   const base = bases.value.find((b) => b.nombre === baseSeleccionada.value) || bases.value[0]
   if (!base || !archivo.value) return
+  notificacion.value = ''
   await api.sistemaImportar(base.nombre, archivo.value)
   archivo.value = null
 }
@@ -61,8 +66,10 @@ onMounted(cargar)
         <option v-for="base in bases" :key="base.nombre" :value="base.nombre">{{ base.nombre }}</option>
       </select>
       <input type="file" accept=".sqlite3,application/octet-stream" @change="archivo = $event.target.files?.[0]" />
-      <button type="button" :disabled="!archivo" @click="restaurar">Restaurar / importar</button>
+      <button type="button" :disabled="!archivo" @click="restaurar">Importar</button>
     </div>
+
+    <div v-if="notificacion" class="notificacion" role="status">{{ notificacion }}</div>
   </section>
 </template>
 
@@ -98,5 +105,15 @@ onMounted(cargar)
 
 .error {
   color: var(--danger);
+}
+
+.notificacion {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-soft);
+  color: var(--fg);
+  font-size: 12px;
 }
 </style>
