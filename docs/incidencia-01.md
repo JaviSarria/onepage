@@ -13,8 +13,8 @@
 | **Entorno detección** | {`DEV`; `QA`; `PROD`}                                                                         |
 | **Fecha detección**   | {dd/MM/yyyy}                                                                                  |
 | **Fecha objetivo**    | {dd/MM/yyyy}                                                                                  |
-| **Commits**           | {id-bitbucket-01, ...}                                                                        |
-| **Despliegues**       | {id-bamboo-01, ...}                                                                           |
+| **Commits**           | {id-serv_repo-01, ...}                                                                        |
+| **Despliegues**       | {id-serv_deploy-01, ...}                                                                           |
 | **Incidencia Jira**   | {id-jira-01}                                                                                  |
 
 ## Resumen
@@ -171,7 +171,7 @@
 | **Descripción** | {Descripción del cambio}              |
 | **Repositorio** | {Nombre del repositorio}              |
 | **Rama**        | {Nombre de la rama en el repositorio} |
-| **Commit**      | {id_bitbucket}                        |
+| **Commit**      | {id_serv_repo}                        |
 
 
 
@@ -274,8 +274,8 @@
 | **Entorno**                       | {`DEV`; `QA`; `PROD`}  |
 | **Fecha-hora**                    | {dd/MM/yyyy HH:mm}     |
 | **Responsable**                   | {nombre}               |
-| **Commits**                       | {Id_bitbucket-01, ...} |
-| **URL Pipeline Bamboo**           | {pipeline_despliegue}  |
+| **Commits**                       | {Id_serv_repo-01, ...} |
+| **URL Pipeline Serv. Despliegue** | {pipeline_despliegue}  |
 | **Validación post-despliegue**    | {acciones}             |
 | **Resultado**                     | {texto}                |
 | **Plan de reversión / No aplica** | {plan}                 |
