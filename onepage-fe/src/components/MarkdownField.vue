@@ -27,6 +27,7 @@ const area = ref(null)
 const arrastrando = ref(false)
 const subiendo = ref(false)
 const error = ref('')
+const imgFullscreen = ref(null)
 const admiteImagenes = computed(() => Boolean(props.seccion && ctx?.tipo && ctx?.id))
 
 watch(
@@ -40,6 +41,17 @@ const html = computed(() => marked.parse(local.value || '', { breaks: true }))
 
 function guardar() {
   if (local.value !== props.valor) emit('cambiar', local.value)
+}
+
+function alClickImagen(evento) {
+  const objetivo = evento.target
+  if (objetivo && (objetivo.tagName === 'IMG')) {
+    imgFullscreen.value = objetivo
+  }
+}
+
+function cerrarImagen() {
+  imgFullscreen.value = null
 }
 
 function imagenesDe(lista) {
@@ -111,7 +123,7 @@ function alSoltar(evento) {
     >
       {{ vista ? '✎' : 'M↓' }}
     </button>
-    <div v-if="vista" class="markdown-preview md" v-html="html"></div>
+    <div v-if="vista" class="markdown-preview md" v-html="html" @click="alClickImagen"></div>
     <textarea
       v-else
       ref="area"
@@ -122,6 +134,10 @@ function alSoltar(evento) {
       @blur="guardar"
     ></textarea>
     <div v-if="!vista" class="markdown-preview-print md" v-html="html"></div>
+    <div v-if="imgFullscreen" class="visor-imagen" @click="cerrarImagen">
+      <img :src="imgFullscreen?.src" :alt="imgFullscreen?.alt || ''" @click.stop />
+      <button class="visor-cerrar" type="button" @click="cerrarImagen">✕</button>
+    </div>
     <p v-if="subiendo" class="aviso">Subiendo imagen…</p>
     <p v-if="error" class="aviso error">{{ error }}</p>
   </div>
@@ -169,6 +185,37 @@ function alSoltar(evento) {
 
 .markdown-preview :deep(img) {
   max-width: 100%;
+  cursor: zoom-in;
+}
+
+.visor-imagen {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 17, 21, 0.9);
+  cursor: zoom-out;
+}
+
+.visor-imagen img {
+  max-width: min(92vw, 1400px);
+  max-height: 88vh;
+  object-fit: contain;
+}
+
+.visor-cerrar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  min-width: 36px;
+  padding: 6px 10px;
+  color: var(--fg);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .arrastrando textarea,
