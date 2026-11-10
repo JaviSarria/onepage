@@ -88,7 +88,7 @@ const ejecuciones = {
     { campo: 'responsable', etiqueta: 'Responsable' },
     { campo: 'resultado', etiqueta: 'Resultado', control: 'select', opciones: RESULTADOS_PRUEBA },
     { campo: 'incidencia', etiqueta: 'Incidencia' },
-    { campo: 'evidencias', etiqueta: 'Evidencias' }
+    { campo: 'evidencias', etiqueta: 'Evidencias', control: 'area' }
   ]
 }
 
@@ -350,7 +350,7 @@ export const ESQUEMA_EVOLUTIVO = {
           columnas: [
             { campo: 'grupo_id', etiqueta: 'Grupo', control: 'select-dinamico' },
             { campo: 'codigo', etiqueta: 'Id', ancho: 'codigo' },
-            { campo: 'detalle', etiqueta: 'Requisito' }
+            { campo: 'detalle', etiqueta: 'Requisito', control: 'area' }
           ]
         },
         {
@@ -361,7 +361,7 @@ export const ESQUEMA_EVOLUTIVO = {
           columnas: [
             { campo: 'codigo', etiqueta: 'Id', ancho: 'codigo' },
             { campo: 'requisito_codigo', etiqueta: 'Requisito', ancho: 'codigo' },
-            { campo: 'criterio', etiqueta: 'Criterio' }
+            { campo: 'criterio', etiqueta: 'Criterio', control: 'area' }
           ]
         },
         texto('tareas_planificadas', 'Tareas planificadas', 'tareas_planificadas')
@@ -451,7 +451,7 @@ export const ESQUEMA_EVOLUTIVO = {
             { campo: 'real', etiqueta: 'Real', control: 'numero' },
             { campo: 'inicio', etiqueta: 'Inicio' },
             { campo: 'fin', etiqueta: 'Fin' },
-            { campo: 'bloqueos', etiqueta: 'Bloqueos' }
+            { campo: 'bloqueos', etiqueta: 'Bloqueos', control: 'area' }
           ]
         },
         {
@@ -527,7 +527,7 @@ export const ESQUEMA_INCIDENCIA = {
           recurso: 'criterios',
           columnas: [
             { campo: 'codigo', etiqueta: 'Id' },
-            { campo: 'criterio', etiqueta: 'Criterio' }
+            { campo: 'criterio', etiqueta: 'Criterio', control: 'area' }
           ]
         }
       ]
@@ -627,7 +627,7 @@ export const ESQUEMA_INCIDENCIA = {
             { campo: 'real', etiqueta: 'Real', control: 'numero' },
             { campo: 'inicio', etiqueta: 'Inicio' },
             { campo: 'fin', etiqueta: 'Fin' },
-            { campo: 'bloqueos', etiqueta: 'Bloqueos' }
+            { campo: 'bloqueos', etiqueta: 'Bloqueos', control: 'area' }
           ]
         },
         {

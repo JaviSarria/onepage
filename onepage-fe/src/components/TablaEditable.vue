@@ -76,6 +76,11 @@ td :deep(textarea) {
   padding: 2px 4px;
 }
 
+td :deep(textarea) {
+  width: 100%;
+  resize: vertical;
+}
+
 td :deep(input:focus),
 td :deep(select:focus),
 td :deep(textarea:focus) {
