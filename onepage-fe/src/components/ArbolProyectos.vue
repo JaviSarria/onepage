@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const props = defineProps({
   nodos: { type: Array, default: () => [] },
@@ -9,7 +9,16 @@ const emit = defineEmits(['seleccionar', 'nuevo-proyecto', 'nuevo-documento', 'b
 
 const abiertos = ref(new Set())
 const filtro = ref('')
-const tema = ref(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
+
+function detectarTemaSistema() {
+  const oscuro =
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : false
+  return oscuro ? 'dark' : 'light'
+}
+
+const tema = ref(detectarTemaSistema())
 
 function alternar(id) {
   const s = new Set(abiertos.value)
@@ -21,6 +30,10 @@ function alternarTema() {
   tema.value = tema.value === 'light' ? 'dark' : 'light'
   document.documentElement.dataset.theme = tema.value
 }
+
+onMounted(() => {
+  document.documentElement.dataset.theme = tema.value
+})
 
 function coincide(texto) {
   return !filtro.value || (texto || '').toLowerCase().includes(filtro.value.toLowerCase())

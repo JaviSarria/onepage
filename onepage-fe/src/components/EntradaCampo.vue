@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   valor: { type: [String, Number, Boolean], default: '' },
@@ -9,9 +9,29 @@ const props = defineProps({
 const emit = defineEmits(['cambiar'])
 
 const local = ref(props.valor)
+const area = ref(null)
 watch(
   () => props.valor,
   (v) => (local.value = v)
+)
+
+onMounted(() => {
+  ajustarAltura()
+})
+
+function ajustarAltura() {
+  const el = area.value
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = el.scrollHeight + 'px'
+}
+
+watch(
+  () => local.value,
+  async () => {
+    await nextTick()
+    ajustarAltura()
+  }
 )
 
 function confirmar() {
@@ -48,12 +68,23 @@ function cambiarInmediato(v) {
     v-model="local"
     @blur="emit('cambiar', Number(local) || 0)"
   />
-  <textarea v-else-if="control === 'area'" v-model="local" rows="4" @blur="confirmar" />
+  <textarea
+    v-else-if="control === 'area'"
+    ref="area"
+    v-model="local"
+    rows="3"
+    @blur="confirmar"
+  />
   <input v-else type="text" v-model="local" @blur="confirmar" @keyup.enter="confirmar" />
 </template>
 
 <style scoped>
 .check {
   width: auto;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
 }
 </style>
