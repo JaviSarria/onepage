@@ -87,11 +87,11 @@ onepage/
 
 ```mermaid
 flowchart LR
-  subgraph FE["onepage-fe (Vue 3 + Vite :5173)"]
+  subgraph FE["onepage-fe (Vue 3 + Vite :5510)"]
     A[Árbol de proyectos] --> C[Vista de documento<br/>acordeón]
     C --> T[Árbol de subsecciones]
   end
-  subgraph BE["onepage-be (FastAPI :8000)"]
+  subgraph BE["onepage-be (FastAPI :9910)"]
     R[Routers CRUD] --> M[Modelo SQLAlchemy]
   end
   FE -- "/api (proxy Vite)" --> BE
@@ -175,8 +175,8 @@ Extraído de [docs/evolutivo-01.md](docs/evolutivo-01.md) y [docs/incidencia-01.
 | --- | --- |
 | `make build` | `uv sync` en el backend + `npm install` y `npm run build` en el frontend |
 | `make start` | Arranca backend y frontend en segundo plano |
-| `make start_be` | Solo backend (http://127.0.0.1:8000) |
-| `make start_fe` | Solo frontend (http://127.0.0.1:5173) |
+| `make start_be` | Solo backend (http://127.0.0.1:9910) |
+| `make start_fe` | Solo frontend (http://127.0.0.1:5510) |
 | `make stop` | Detiene ambos |
 | `make stop_be` / `make stop_fe` | Detiene uno de ellos |
 | `make status` | Estado de los procesos |
@@ -246,7 +246,7 @@ make build          # instala dependencias
 make start          # backend + frontend con recarga de Vite
 ```
 
-Documentación interactiva de la API: <http://127.0.0.1:8000/docs>.
+Documentación interactiva de la API: <http://127.0.0.1:9910/docs>.
 
 ### Backend
 

@@ -17,8 +17,8 @@ INCIDENCIAS_DB_URL = f"sqlite:///{INCIDENCIAS_DB_PATH.as_posix()}"
 
 CORS_ORIGINS = os.environ.get(
     "ONEPAGE_CORS_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173",
+    "http://localhost:5510,http://127.0.0.1:5510",
 ).split(",")
 
 API_HOST = os.environ.get("ONEPAGE_BE_HOST", "127.0.0.1")
-API_PORT = int(os.environ.get("ONEPAGE_BE_PORT", "8000"))
+API_PORT = int(os.environ.get("ONEPAGE_BE_PORT", "9910"))

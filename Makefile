@@ -4,8 +4,8 @@
 BE_DIR := onepage-be
 FE_DIR := onepage-fe
 RUN_DIR := .run
-BE_PORT ?= 8000
-FE_PORT ?= 5173
+BE_PORT ?= 9910
+FE_PORT ?= 5510
 
 .PHONY: help build build_be build_fe start start_be start_fe stop stop_be stop_fe restart status clean
 

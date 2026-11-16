@@ -87,11 +87,11 @@ onepage/
 
 ```mermaid
 flowchart LR
-  subgraph FE["onepage-fe (Vue 3 + Vite :5173)"]
+  subgraph FE["onepage-fe (Vue 3 + Vite :5510)"]
     A[Project tree] --> C[Document view<br/>accordion]
     C --> T[Subsection tree]
   end
-  subgraph BE["onepage-be (FastAPI :8000)"]
+  subgraph BE["onepage-be (FastAPI :9910)"]
     R[Routers CRUD] --> M[SQLAlchemy model]
   end
   FE -- "/api (Vite proxy)" --> BE
@@ -170,8 +170,8 @@ Extracted from [docs/evolutivo-01.md](docs/evolutivo-01.md) and [docs/incidencia
 | --- | --- |
 | `make build` | `uv sync` in the backend + `npm install` and `npm run build` in the frontend |
 | `make start` | Start backend and frontend in background |
-| `make start_be` | Only backend (http://127.0.0.1:8000) |
-| `make start_fe` | Only frontend (http://127.0.0.1:5173) |
+| `make start_be` | Only backend (http://127.0.0.1:9910) |
+| `make start_fe` | Only frontend (http://127.0.0.1:5510) |
 | `make stop` | Stop both |
 | `make stop_be` / `make stop_fe` | Stop one of them |
 | `make status` | Process status |
@@ -243,7 +243,7 @@ make build          # install dependencies
 make start          # backend + frontend with Vite reload
 ```
 
-Interactive API documentation: <http://127.0.0.1:8000/docs>.
+Interactive API documentation: <http://127.0.0.1:9910/docs>.
 
 ### Backend
 

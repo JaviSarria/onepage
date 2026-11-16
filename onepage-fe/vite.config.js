@@ -5,11 +5,11 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     host: '127.0.0.1',
-    port: 5173,
+    port: 5510,
     strictPort: true,
     proxy: {
       '/api': {
-        target: process.env.ONEPAGE_API || 'http://127.0.0.1:8000',
+        target: process.env.ONEPAGE_API || 'http://127.0.0.1:9910',
         changeOrigin: true
       }
     }

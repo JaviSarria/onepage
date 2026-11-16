@@ -8,6 +8,8 @@ RUN pip install uv
 # Copiar primero los ficheros de dependencias
 COPY pyproject.toml uv.lock ./
 
+ARG BE_PORT=9910
+
 # Instalar dependencias
 RUN uv sync --frozen --no-dev
 
@@ -16,6 +18,6 @@ COPY . .
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-EXPOSE 8000
+EXPOSE 9910
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${BE_PORT}"]

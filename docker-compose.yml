@@ -5,7 +5,7 @@ services:
       context: ./onepage-be
     container_name: onepage-be
     ports:
-      - "8000:8000"
+      - "910:9910"
 
   onepage-fe:
     build:
