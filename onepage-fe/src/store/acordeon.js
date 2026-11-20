@@ -31,6 +31,7 @@ export function cerrarTodo() {
 }
 
 export function irA(clave) {
+  setClaveActual(clave)
   abrir(clave)
   requestAnimationFrame(() => {
     const el = document.getElementById(domId(clave))

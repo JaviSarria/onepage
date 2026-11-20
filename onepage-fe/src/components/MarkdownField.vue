@@ -33,11 +33,14 @@ const admiteImagenes = computed(() => Boolean(props.seccion && ctx?.tipo && ctx?
 watch(
   () => props.valor,
   (valor) => {
-    local.value = valor || ''
+    const siguiente = valor || ''
+    // Solo sincroniza cuando el valor realmente cambio: tras un guardado y recarga
+    // el contenido vuelve identico y no se debe pisar el editor (foco/cursor).
+    if (siguente !== local.value) local.value = siguiente
   }
 )
 
-const html = computed(() => marked.parse(local.value || '', { breaks: true }))
+const html = computed(() => (vista.value ? marked.parse(local.value || '', { breaks: true }) : ''))
 
 function guardar() {
   if (local.value !== props.valor) emit('cambiar', local.value)

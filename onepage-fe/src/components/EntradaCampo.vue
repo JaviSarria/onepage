@@ -12,7 +12,11 @@ const local = ref(props.valor)
 const area = ref(null)
 watch(
   () => props.valor,
-  (v) => (local.value = v)
+  (v) => {
+    // Solo sincroniza cuando el valor cambio: evita resetear inputs al recargar
+    // el documento tras un guardado (mantiene valor, foco y cursor).
+    if (v !== local.value) local.value = v
+  }
 )
 
 onMounted(() => {

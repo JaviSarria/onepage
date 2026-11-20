@@ -17,8 +17,10 @@ const actual = computed(() => claveActual())
 
 function debeExpandir(nodo) {
   if (contraidos.value.has(nodo.clave)) return false
-  return expandidos.value.has(nodo.clave) ||
-    (Boolean(actual.value) && actual.value.startsWith(nodo.clave + '/'))
+  const esAncestro = Boolean(actual.value) && actual.value.startsWith(nodo.clave + '/')
+  return (
+    expandidos.value.has(nodo.clave) || esAncestro || actual.value === nodo.clave
+  )
 }
 
 function alternarExpandido(clave) {

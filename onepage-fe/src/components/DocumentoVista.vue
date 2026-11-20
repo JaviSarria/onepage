@@ -26,17 +26,24 @@ const tituloImpresion = computed(() => {
   return `${prefijo}${doc.value?.titulo || 'Documento'}`
 })
 
+// La expansión inicial de secciones se decide SOLO en la carga del documento.
+// Los recargos por ediciones preservan el estado de apertura manual del usuario.
+let abrirEnCarga = true
+
 async function recargar() {
   cargando.value = true
   try {
     doc.value = await api.documento(props.tipo, props.id)
-    const abiertos = new Set(['doc/cabecera'])
-    for (const seccion of esquema.value.secciones) {
-      const clave = `doc/${seccion.id}`
-      abiertos.add(clave)
-      recogerRellenos(seccion.hijos, doc.value, clave, abiertos)
+    if (abrirEnCarga) {
+      const abiertos = new Set(['doc/cabecera'])
+      for (const seccion of esquema.value.secciones) {
+        const clave = `doc/${seccion.id}`
+        abiertos.add(clave)
+        recogerRellenos(seccion.hijos, doc.value, clave, abiertos)
+      }
+      abrirTodo([...abiertos])
+      abrirEnCarga = false
     }
-    abrirTodo([...abiertos])
   } catch (e) {
     emit('error', e.message)
   } finally {
@@ -78,8 +85,8 @@ watch(indice, (v) => emit('indice', v), { immediate: true })
 watch(
   () => [props.tipo, props.id],
   () => {
+    abrirEnCarga = true
     recargar().then(() => {
-      abrirTodo(['doc/cabecera', ...esquema.value.secciones.map((s) => `doc/${s.id}`)])
       if (props.saltarA) {
         setTimeout(() => irA(props.saltarA), 150)
       }
