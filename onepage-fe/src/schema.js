@@ -277,12 +277,14 @@ const despliegue = (extra = []) => ({
       recurso: 'bases-datos',
       columnas: [
         { campo: 'repositorio', etiqueta: 'Repositorio' },
-        { campo: 'nombre', etiqueta: 'Nombre' },
+        { campo: 'nombre', etiqueta: 'Base de datos' },
         { campo: 'tabla', etiqueta: 'Tabla' },
-        { campo: 'campos', etiqueta: 'Campos' }
+        { campo: 'campo', etiqueta: 'Campo' },
+        { campo: 'valor', etiqueta: 'Valor' },
+        { campo: 'notas', etiqueta: 'Notas' }
       ]
     },
-    texto('migracion_datos', 'Migración de datos', 'migracion_datos')
+    texto('notas', 'Notas', 'notas')
   ]
 })
 

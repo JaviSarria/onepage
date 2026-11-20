@@ -55,7 +55,7 @@ class BloquesComunesMixin:
     descripcion_solucion: Mapped[str] = mapped_column(Text, default="", nullable=False)
     datos_pruebas: Mapped[str] = mapped_column(Text, default="", nullable=False)
     modulos_afectados: Mapped[str] = mapped_column(Text, default="", nullable=False)
-    migracion_datos: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    notas: Mapped[str] = mapped_column(Text, default="", nullable=False)
 
 
 class CriterioMixin:
@@ -157,7 +157,9 @@ class BaseDatosAfectadaMixin:
     repositorio: Mapped[str] = mapped_column(String(128), default="", nullable=False)
     nombre: Mapped[str] = mapped_column(String(128), default="", nullable=False)
     tabla: Mapped[str] = mapped_column(String(128), default="", nullable=False)
-    campos: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    campo: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    valor: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    notas: Mapped[str] = mapped_column(Text, default="", nullable=False)
 
 
 class ReunionMixin:

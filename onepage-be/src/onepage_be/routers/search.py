@@ -139,7 +139,7 @@ def _buscar_en_documentos(
         ("descripcion_solucion", "Descripción de la solución", "Desarrollo › Solución", "doc/desarrollo"),
         ("datos_pruebas", "Datos de pruebas", "Pruebas › Datos", "doc/pruebas"),
         ("modulos_afectados", "Módulos afectados", "Desarrollo › Módulos", "doc/desarrollo"),
-        ("migracion_datos", "Migración de datos", "Desarrollo › Migración", "doc/desarrollo"),
+        ("notas", "Notas", "Desarrollo › Notas", "doc/desarrollo"),
     ] + especificos_narrativos
 
     condiciones = [
@@ -216,7 +216,7 @@ def buscar_en_evolutivos(
         (me.CasoPrueba, "evolutivo_id", "Pruebas › Casos de prueba", "doc/pruebas/casos-prueba/{id}", [("requisito_codigo", "Requisito"), ("datos", "Datos"), ("estado", "Estado"), ("responsable", "Responsable"), ("incidencias", "Incidencias")]),
         (me.DefinitionOfDone, "evolutivo_id", "Definition of Done", "doc/dod/definition-of-done", [("descripcion", "Criterio")]),
         (me.Despliegue, "evolutivo_id", "Despliegues", "doc/despliegue/registros-despliegue", [("version", "Versión"), ("entorno", "Entorno"), ("fecha_hora", "Fecha"), ("responsable", "Responsable"), ("commits", "Commits"), ("url_pipeline", "Pipeline"), ("validacion_post", "Validación"), ("resultado", "Resultado"), ("plan_reversion", "Plan de reversión")]),
-        (me.BaseDatosAfectada, "evolutivo_id", "Desarrollo › Bases de datos", "doc/desarrollo/bases-datos", [("repositorio", "Repositorio"), ("nombre", "Base de datos"), ("tabla", "Tabla"), ("campos", "Campos")]),
+        (me.BaseDatosAfectada, "evolutivo_id", "Desarrollo › Bases de datos", "doc/desarrollo/bases-datos", [("repositorio", "Repositorio"), ("nombre", "Base de datos"), ("tabla", "Tabla"), ("campo", "Campo"), ("valor", "Valor"), ("notas", "Notas")]),
         (me.Reunion, "evolutivo_id", "Reuniones", "doc/reuniones/reuniones/{id}", [("fecha", "Fecha"), ("participantes", "Participantes"), ("objetivo", "Objetivo"), ("decisiones", "Decisiones"), ("notas", "Notas")]),
         (me.Planificacion, "evolutivo_id", "Planificación", "doc/planificacion/planificacion", [("requisito_codigo", "Requisito"), ("criterio_codigo", "Criterio"), ("tarea_codigo", "Tarea"), ("responsable", "Responsable"), ("bloqueos", "Bloqueos")]),
         (me.Trazabilidad, "evolutivo_id", "Planificación › Trazabilidad", "doc/planificacion/trazabilidad", [("requisito_codigo", "Requisito"), ("criterio_codigo", "Criterio"), ("tarea_codigo", "Tarea"), ("prueba_codigo", "Prueba"), ("cambios", "Cambios"), ("estado_cobertura", "Cobertura")]),
@@ -527,7 +527,7 @@ def buscar_en_incidencias(
         (mi.CasoPrueba, "incidencia_id", "Pruebas › Casos de prueba", "doc/pruebas/casos-prueba/{id}", [("datos_usados", "Datos usados"), ("pasos_dados", "Pasos dados"), ("datos", "Datos"), ("estado", "Estado"), ("responsable", "Responsable"), ("incidencias", "Incidencias")]),
         (mi.DefinitionOfDone, "incidencia_id", "Definition of Done", "doc/dod/definition-of-done", [("descripcion", "Criterio")]),
         (mi.Despliegue, "incidencia_id", "Despliegues", "doc/despliegue/registros-despliegue", [("version", "Versión"), ("entorno", "Entorno"), ("fecha_hora", "Fecha"), ("responsable", "Responsable"), ("commits", "Commits"), ("url_pipeline", "Pipeline"), ("validacion_post", "Validación"), ("resultado", "Resultado"), ("plan_reversion", "Plan de reversión")]),
-        (mi.BaseDatosAfectada, "incidencia_id", "Desarrollo › Bases de datos", "doc/desarrollo/bases-datos", [("repositorio", "Repositorio"), ("nombre", "Base de datos"), ("tabla", "Tabla"), ("campos", "Campos")]),
+        (mi.BaseDatosAfectada, "incidencia_id", "Desarrollo › Bases de datos", "doc/desarrollo/bases-datos", [("repositorio", "Repositorio"), ("nombre", "Base de datos"), ("tabla", "Tabla"), ("campo", "Campo"), ("valor", "Valor"), ("notas", "Notas")]),
         (mi.Reunion, "incidencia_id", "Reuniones", "doc/reuniones/reuniones/{id}", [("fecha", "Fecha"), ("participantes", "Participantes"), ("objetivo", "Objetivo"), ("decisiones", "Decisiones"), ("notas", "Notas")]),
         (mi.Planificacion, "incidencia_id", "Planificación", "doc/planificacion/planificacion", [("criterio_codigo", "Criterio"), ("tarea_codigo", "Tarea"), ("responsable", "Responsable"), ("bloqueos", "Bloqueos")]),
         (mi.Trazabilidad, "incidencia_id", "Planificación › Trazabilidad", "doc/planificacion/trazabilidad", [("criterio_codigo", "Criterio"), ("tarea_codigo", "Tarea"), ("prueba_codigo", "Prueba"), ("cambios", "Cambios"), ("estado_cobertura", "Cobertura")]),

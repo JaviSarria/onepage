@@ -132,6 +132,32 @@ def _migrate_existing_databases() -> None:
                     text(f'ALTER TABLE "{table}" ADD COLUMN "{column}" TEXT NOT NULL DEFAULT \'\'')
                 )
 
+    for engine, table in ((evolutivos_engine, "evolutivos"), (incidencias_engine, "incidencias")):
+        columnas = {item["name"] for item in inspect(engine).get_columns(table)}
+        if "migracion_datos" in columnas:
+            with engine.begin() as connection:
+                connection.execute(
+                    text(f'ALTER TABLE "{table}" RENAME COLUMN "migracion_datos" TO "notas"')
+                )
+
+    for engine in (evolutivos_engine, incidencias_engine):
+        tabla = "bases_datos_afectadas"
+        columnas = {item["name"] for item in inspect(engine).get_columns(tabla)}
+        if "campos" in columnas:
+            with engine.begin() as connection:
+                connection.execute(
+                    text(f'ALTER TABLE "{tabla}" RENAME COLUMN "campos" TO "campo"')
+                )
+        for columna, definicion in (
+            ("valor", "TEXT NOT NULL DEFAULT ''"),
+            ("notas", "TEXT NOT NULL DEFAULT ''"),
+        ):
+            if columna not in columnas:
+                with engine.begin() as connection:
+                    connection.execute(
+                        text(f'ALTER TABLE "{tabla}" ADD COLUMN "{columna}" {definicion}')
+                    )
+
     for engine in (evolutivos_engine, incidencias_engine):
         columns = {item["name"] for item in inspect(engine).get_columns("tareas_seguimiento")}
         tenia_nombre = "nombre" in columns
